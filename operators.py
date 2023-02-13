@@ -53,7 +53,10 @@ class QuestionMark(Operator):
 
     def get_representation(self, symbol):
         #return (a|ε)
-        return '('+symbol+'|'+Epsilon().symbol+')'
+        #if RightParenthesis().symbol not in symbol and LeftParenthesis().symbol not in symbol:
+         #   return symbol+'|'+Epsilon().symbol
+        #else:
+            return '('+symbol+ '|'+Epsilon().symbol+')'
 
 #Positive closure operator
 class PositiveClosure(Operator):
@@ -63,8 +66,10 @@ class PositiveClosure(Operator):
         self.associativity = 'right'
 
     def get_representation(self, symbol):
-        #rr*
-        return symbol+symbol+KleeneStar().symbol
+        if len(symbol) == 1:
+            return '('+symbol+symbol+KleeneStar().symbol+')'
+        else:
+            return '('+'('+symbol+')'+'('+symbol+')'+KleeneStar().symbol+')'
 
 #Make epsilon operator
 class Epsilon(Operator):

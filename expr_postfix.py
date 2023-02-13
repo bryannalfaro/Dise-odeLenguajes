@@ -17,25 +17,161 @@ class PostfixConverter:
 
     def make_changes_operators(self):
         new_expression = []
+        conversion = []
+        inside = []
         for i in range(len(self.expression)):
             new_expression.append(self.expression[i])
+            #print("new_expression for",new_expression)
+
+            #if inside != [] and new_expression[-1] == LeftParenthesis().symbol:
+            #    new_expression.pop()
 
             #Evaluate the question mark
             if self.expression[i] == QuestionMark().symbol:
+                    #print('new_expression question',new_expression)
                     new_expression.pop()
                     a = []
+                    inside = []
+                    external_letters = []
                     #pop the question mark and the symbols before it
                     while len(new_expression) > 0 :
-                        a.append(new_expression.pop())
-                    new_expression = list((QuestionMark().get_representation(''.join(reversed(a)))))
+                        #print('new while',new_expression)
+                        value = new_expression[-1]
+                        #print('value',value)
+                        #evaluate value not in symbols
+                        if value != RightParenthesis().symbol:
+                            if inside != []: #demas letras
+                                external_letters.append(new_expression.pop())
+                            #evaluate if the value is not a symbol
+                            elif value not in self.symbols:
+
+                                a.append(new_expression.pop())
+                                #conversion = list((QuestionMark().get_representation(''.join(reversed(a)))))
+                                break
+                            else:
+                               a.append(new_expression.pop())
+
+                        #elif value == LeftParenthesis().symbol:
+                        #    new_expression.pop()
+                        #   break
+                        elif value == RightParenthesis().symbol:
+                            counter_R = 0
+                            counter_L = 0
+                            new_expression.pop()
+                            #print('right',new_expression)
+                            #iterate until you find the left parenthesis
+                            while len(new_expression) > 0:
+                                value = new_expression[-1]
+                                if value != LeftParenthesis().symbol and value != RightParenthesis().symbol:
+                                    inside.append(new_expression.pop())
+                                elif value == LeftParenthesis().symbol and counter_R == counter_L:
+                                    new_expression.pop()
+                                    break
+                                elif value == LeftParenthesis().symbol and counter_R != counter_L:
+                                    counter_L += 1
+                                    new_expression.pop()
+                                else:
+                                    counter_R += 1
+                                    new_expression.pop()
+                            inside = list((QuestionMark().get_representation(''.join(reversed(inside)))))
+                            new_expression = new_expression + inside
+                            #print("inside",inside)
+                            #print("new expresion right",new_expression)
+                            break
+                        else:
+                            pass
+                            #a.append(new_expression.pop())
+                            #print('inside',inside)
+                            #inside = list((QuestionMark().get_representation(''.join(reversed(inside)))))
+                    #print("a question",a)
+                    if a != []:
+                        #make conversion
+                        conversion = list((QuestionMark().get_representation(''.join(reversed(a)))))
+                        new_expression = new_expression + conversion
+                    #print("new",new_expression)
+                    #print(conversion,inside,external_letters)
+                    #new_expression = new_expression +inside + external_letters
+
             #Evaluate the positive closure
             if self.expression[i] == PositiveClosure().symbol:
-                    new_expression.pop()
+                    '''new_expression.pop()
                     a = []
                     #pop the question mark and the symbols before it
                     while len(new_expression) > 0 :
-                        a.append(new_expression.pop())
+                        value = new_expression[-1]
+                        print("hereee",new_expression)
+                        if value != LeftParenthesis().symbol and value != RightParenthesis().symbol:
+
+                            a.append(new_expression.pop())
+                        else:
+                            print('here',new_expression)
+                            new_expression.pop()
+
+                    print(a)
                     new_expression = list((PositiveClosure().get_representation(''.join(reversed(a)))))
+                    print('a+',new_expression)'''
+                    #print('new_expression question',new_expression)
+                    new_expression.pop()
+                    a = []
+                    inside = []
+                    external_letters = []
+                    #pop the question mark and the symbols before it
+                    while len(new_expression) > 0 :
+                        #print('new while',new_expression)
+                        value = new_expression[-1]
+                        #print('value',value)
+                        #evaluate value not in symbols
+                        if value != RightParenthesis().symbol:
+                            if inside != []: #demas letras
+                                external_letters.append(new_expression.pop())
+                            #evaluate if the value is not a symbol
+                            elif value not in self.symbols:
+
+                                a.append(new_expression.pop())
+                                #conversion = list((QuestionMark().get_representation(''.join(reversed(a)))))
+                                break
+                            else:
+                               a.append(new_expression.pop())
+
+                        #elif value == LeftParenthesis().symbol:
+                        #    new_expression.pop()
+                        #   break
+                        elif value == RightParenthesis().symbol:
+                            counter_R = 0
+                            counter_L = 0
+                            new_expression.pop()
+                            #print('right',new_expression)
+                            #iterate until you find the left parenthesis
+                            while len(new_expression) > 0:
+                                value = new_expression[-1]
+                                if value != LeftParenthesis().symbol and value != RightParenthesis().symbol:
+                                    inside.append(new_expression.pop())
+                                elif value == LeftParenthesis().symbol and counter_R == counter_L:
+                                    new_expression.pop()
+                                    break
+                                elif value == LeftParenthesis().symbol and counter_R != counter_L:
+                                    counter_L += 1
+                                    new_expression.pop()
+                                else:
+                                    counter_R += 1
+                                    new_expression.pop()
+                            inside = list((PositiveClosure().get_representation(''.join(reversed(inside)))))
+                            new_expression = new_expression + inside
+                            #print("inside",inside)
+                            #print("new expresion right",new_expression)
+                            break
+                        else:
+                            pass
+                            #a.append(new_expression.pop())
+                            #print('inside',inside)
+                            #inside = list((QuestionMark().get_representation(''.join(reversed(inside)))))
+                    #print("a question",a)
+                    if a != []:
+                        #make conversion
+                        conversion = list((PositiveClosure().get_representation(''.join(reversed(a)))))
+                        new_expression = new_expression + conversion
+                    #print("new",new_expression)
+                    #print(conversion,inside,external_letters)
         return new_expression
 
     #add the concatenation operator after the kleene star
@@ -44,7 +180,7 @@ class PostfixConverter:
 
         self.expression = self.make_changes_operators()
         self.expression = ''.join(self.expression)
-
+        #print('after symbols',self.expression)
 
         for i in range(len(self.expression)):
             new_expression.append(self.expression[i])
@@ -63,6 +199,10 @@ class PostfixConverter:
                     if self.expression[i+1] not in self.symbols and self.expression[i+1] != RightParenthesis().symbol:
 
                         new_expression.append(Concatenation().symbol)
+                    #add concatenation between alphabet and left parenthesis
+                    elif self.expression[i+1] == LeftParenthesis().symbol:
+
+                        new_expression.append(Concatenation().symbol)
 
         return new_expression
 
@@ -70,14 +210,11 @@ class PostfixConverter:
 
 
     def convertToPostfix(self):
-
-        #Iterate through the expression
+        #clean the expression
         self.expression = self.preprocess()
-
         print(''.join(self.expression))
-
-
         #print(self.expression)
+        #Iterate through the expression
         for i in self.expression:
 
             #check if it is an alphabet symbol
@@ -91,7 +228,7 @@ class PostfixConverter:
                 #check if it is (
                 elif i == '(':
                     self.stack_operators.append(i)
-                #check if it is )
+                #check if it is ) and empty the stack until (
                 elif i == ')':
                     while self.stack_operators[-1] != '(':
                         self.postfix_stack.append(self.stack_operators.pop())
