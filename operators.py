@@ -56,8 +56,10 @@ class QuestionMark(Operator):
         #if RightParenthesis().symbol not in symbol and LeftParenthesis().symbol not in symbol:
          #   return symbol+'|'+Epsilon().symbol
         #else:
-            return '('+symbol+ '|'+Epsilon().symbol+')'
-
+        if len(symbol) == 1:
+            return '('+symbol+Union().symbol+Epsilon().symbol+')'
+        else:
+            return '('+'('+symbol+')'+Union().symbol+Epsilon().symbol + ')'
 #Positive closure operator
 class PositiveClosure(Operator):
     def __init__(self):
