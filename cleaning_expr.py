@@ -4,13 +4,17 @@ class Clear():
         self.expression = expression
         self.symbols = symbols
 
-    def clean_special_operators(self,symbol, new_expression):
+    def validate_expression(self):
+        #check if the expression is valid
+        pass
 
+    def clean_special_operators(self,symbol, new_expression):
+        #pop the symbol
         new_expression.pop()
         a = []
         inside = []
         external_letters = []
-        #pop the question mark and the symbols before it
+
         while len(new_expression) > 0 :
             #print('new while',new_expression)
             value = new_expression[-1]
@@ -23,19 +27,16 @@ class Clear():
                 elif value not in self.symbols:
 
                     a.append(new_expression.pop())
-                    #conversion = list((QuestionMark().get_representation(''.join(reversed(a)))))
                     break
                 else:
                     a.append(new_expression.pop())
 
-            #elif value == LeftParenthesis().symbol:
-            #    new_expression.pop()
-            #   break
             elif value == RightParenthesis().symbol:
-                counter_R = 0
+                counter_R = 0 #Count if there are more than one parenthesis
                 counter_L = 0
                 new_expression.pop()
                 #print('right',new_expression)
+
                 #iterate until you find the left parenthesis
                 while len(new_expression) > 0:
                     value = new_expression[-1]
@@ -57,17 +58,11 @@ class Clear():
                 break
             else:
                 pass
-                #a.append(new_expression.pop())
-                #print('inside',inside)
-                #inside = list((QuestionMark().get_representation(''.join(reversed(inside)))))
-        #print("a question",a)
         if a != []:
             #make conversion
             conversion = list((symbol.get_representation(''.join(reversed(a)))))
             new_expression = new_expression + conversion
-        #print("new",new_expression)
-        #print(conversion,inside,external_letters)
-        #new_expression = new_expression +inside + external_letters
+
         return new_expression
 
 
@@ -79,8 +74,6 @@ class Clear():
             new_expression.append(self.expression[i])
             #print("new_expression for",new_expression)
 
-            #if inside != [] and new_expression[-1] == LeftParenthesis().symbol:
-            #    new_expression.pop()
             if self.expression[i] == QuestionMark().symbol:
                 new_expression = self.clean_special_operators(QuestionMark(), new_expression)
             elif self.expression[i] == PositiveClosure().symbol:

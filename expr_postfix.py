@@ -21,6 +21,7 @@ class PostfixConverter:
         self.expression = Clear(self.expression,self.symbols).preprocess()
         #print(''.join(self.expression))
         #print(self.expression)
+
         #Iterate through the expression
         for i in self.expression:
 
@@ -46,16 +47,6 @@ class PostfixConverter:
                     while len(self.stack_operators) != 0 and self.symbols[i].precedence <= self.symbols[self.stack_operators[-1]].precedence:
                         self.postfix_stack.append(self.stack_operators.pop())
                     self.stack_operators.append(i)
-
-
-                    '''if self.symbols[i].precedence< self.symbols[self.stack_operators[-1]].precedence:
-                        self.postfix_stack.append(self.stack_operators.pop())
-                        self.stack_operators.append(i)
-                    elif self.symbols[i].precedence == self.symbols[self.stack_operators[-1]].precedence:
-                        self.postfix_stack.append(self.stack_operators.pop())
-                        self.stack_operators.append(i)
-                    else:
-                        self.stack_operators.append(i)'''
 
         #Empty the stack
         while len(self.stack_operators) != 0:
