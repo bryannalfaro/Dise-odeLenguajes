@@ -1,3 +1,6 @@
+#TODO
+#validaciones
+#start graph
 from alphabet_definition import AlphabetDefinition
 from operators import *
 from cleaning_expr import Clear
@@ -18,11 +21,18 @@ class PostfixConverter:
 
     def convertToPostfix(self):
         #clean the expression
+        flag_validation = Clear(self.expression,self.symbols).validate_expression_parenthesis()
+        #check operators
+        flag_operators = Clear(self.expression,self.symbols).validate_expression_operators()
+        if flag_validation == False or flag_operators == False:
+            print("Error: invalid expression")
+            exit(1)
         self.expression = Clear(self.expression,self.symbols).preprocess()
         #print(''.join(self.expression))
         #print(self.expression)
 
         #Iterate through the expression
+        print(''.join(self.expression))
         for i in self.expression:
 
             #check if it is an alphabet symbol
@@ -34,11 +44,11 @@ class PostfixConverter:
                 if len(self.stack_operators) == 0:
                     self.stack_operators.append(i)
                 #check if it is (
-                elif i == '(':
+                elif i == LeftParenthesis().symbol:
                     self.stack_operators.append(i)
                 #check if it is ) and empty the stack until (
-                elif i == ')':
-                    while self.stack_operators[-1] != '(':
+                elif i == RightParenthesis().symbol:
+                    while self.stack_operators[-1] != LeftParenthesis().symbol:
                         self.postfix_stack.append(self.stack_operators.pop())
                     self.stack_operators.pop()
                 else:
@@ -50,6 +60,7 @@ class PostfixConverter:
 
         #Empty the stack
         while len(self.stack_operators) != 0:
+
             self.postfix_stack.append(self.stack_operators.pop())
 
         print(''.join(self.postfix_stack))

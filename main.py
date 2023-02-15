@@ -1,7 +1,11 @@
 from expr_postfix import PostfixConverter
 
 #initialize alphabet
+
 expression = input("Enter an expression: ")
+if expression == "":
+    print("Error: empty expression")
+    exit(1)
 
 '''#for every expression in pruebas.txt print the postfix expression
 with open('pruebas.txt') as f:
@@ -12,7 +16,6 @@ with open('pruebas.txt') as f:
         expression_postfix.convertToPostfix()'''
 
 expression_postfix = PostfixConverter(expression)
-#expression_postfix.validate_expression()
 expression_postfix.build_Alphabet()
 expression_postfix.convertToPostfix()
 

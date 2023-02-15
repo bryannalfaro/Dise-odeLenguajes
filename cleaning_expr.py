@@ -4,9 +4,43 @@ class Clear():
         self.expression = expression
         self.symbols = symbols
 
-    def validate_expression(self):
-        #check if the expression is valid
-        pass
+    def validate_expression_parenthesis(self):
+        opening_parenthesis = [LeftParenthesis().symbol]
+        closing_parenthesis = [RightParenthesis().symbol]
+        counter_parenthesis = 0
+        for i in self.expression:
+            if i in opening_parenthesis:
+                counter_parenthesis += 1
+            elif i in closing_parenthesis:
+                counter_parenthesis -= 1
+        if counter_parenthesis != 0:
+            return False
+        else:
+            return True
+
+    def validate_expression_operators(self):
+        operators = [KleeneStar().symbol, Concatenation().symbol, Union().symbol, QuestionMark().symbol, PositiveClosure().symbol]
+        flag_operator = True
+        for i in range(len(self.expression)):
+            if self.expression[i] in operators and flag_operator ==True:
+                if self.expression[i] == Union().symbol:
+                    #check if has a symbol before and after
+                    flag_operator = Union().valid_operation(self.expression,self.symbols)
+                elif self.expression[i] == KleeneStar().symbol:
+                    flag_operator = KleeneStar().valid_operation(self.expression)
+                elif self.expression[i] == QuestionMark().symbol:
+                    flag_operator = QuestionMark().valid_operation(self.expression)
+                elif self.expression[i] == PositiveClosure().symbol:
+
+                    flag_operator = PositiveClosure().valid_operation(self.expression)
+            elif flag_operator == False:
+                break
+            else:
+                pass
+        return flag_operator
+
+
+
 
     def clean_special_operators(self,symbol, new_expression):
         #pop the symbol
