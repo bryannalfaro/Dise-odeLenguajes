@@ -17,7 +17,11 @@ with open('pruebas.txt') as f:
 
 expression_postfix = PostfixConverter(expression)
 expression_postfix.build_Alphabet()
-expression_postfix.convertToPostfix()
+postfix = expression_postfix.convertToPostfix() #Get postfix
+print(postfix)
+node_root = expression_postfix.make_nodes(postfix)#nodo root
 
 
-
+nodes_postorder = node_root.make_postorder()
+afn = node_root.make_automata(nodes_postorder)
+afn.visualize()

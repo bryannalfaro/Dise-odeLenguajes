@@ -1,0 +1,18 @@
+digraph automata1 {
+	322 [label=322 shape=circle]
+	824 [label=824 shape=doublecircle]
+	322 -> 363 [label=e]
+	322 -> 75 [label=e]
+	363 -> 292 [label=e]
+	363 -> 429 [label=e]
+	292 -> 676 [label=b]
+	676 -> 429 [label=e]
+	676 -> 292 [label=e]
+	429 -> 824 [label=e]
+	75 -> 56 [label=e]
+	75 -> 996 [label=e]
+	56 -> 564 [label=a]
+	564 -> 996 [label=e]
+	564 -> 56 [label=e]
+	996 -> 824 [label=e]
+}

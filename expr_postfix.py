@@ -3,6 +3,7 @@
 #start graph
 from alphabet_definition import AlphabetDefinition
 from operators import *
+from node_automata import Node
 from cleaning_expr import Clear
 
 class PostfixConverter:
@@ -12,6 +13,7 @@ class PostfixConverter:
         self.symbols = self.alphabet.getSymbolDictionary()
         self.stack_operators = []
         self.postfix_stack = []
+        self.nodes_stack = []
 
     def build_Alphabet(self):
         for i in self.expression:
@@ -63,4 +65,32 @@ class PostfixConverter:
 
             self.postfix_stack.append(self.stack_operators.pop())
 
-        print(''.join(self.postfix_stack))
+        return ''.join(self.postfix_stack)
+
+    def make_nodes(self,expression):
+        for i in range(len(expression)):
+            i = expression[i]
+            #check if it is an alphabet symbol
+            if i not in self.symbols:
+
+                self.nodes_stack.append(Node(i))
+            else:
+                    #check if it is a *
+                    if i == KleeneStar().symbol:
+                        node = Node(i)
+                        node.left = self.nodes_stack.pop()
+                        self.nodes_stack.append(node)
+                    #check if it is a |
+                    elif i == Union().symbol:
+                        node = Node(i)
+                        node.right = self.nodes_stack.pop()
+                        node.left = self.nodes_stack.pop()
+                        self.nodes_stack.append(node)
+                    #check if it is a .
+                    elif i == Concatenation().symbol:
+                        node = Node(i)
+                        node.right = self.nodes_stack.pop()
+                        node.left = self.nodes_stack.pop()
+                        self.nodes_stack.append(node)
+        return self.nodes_stack.pop()
+

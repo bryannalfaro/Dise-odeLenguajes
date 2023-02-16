@@ -4,6 +4,7 @@ class Clear():
         self.expression = expression
         self.symbols = symbols
 
+    #Validar que la cantidad de parentesis este balanceada
     def validate_expression_parenthesis(self):
         opening_parenthesis = [LeftParenthesis().symbol]
         closing_parenthesis = [RightParenthesis().symbol]
@@ -18,6 +19,7 @@ class Clear():
         else:
             return True
 
+    #Valida las necesidades de cada operador
     def validate_expression_operators(self):
         operators = [KleeneStar().symbol, Concatenation().symbol, Union().symbol, QuestionMark().symbol, PositiveClosure().symbol]
         flag_operator = True
@@ -41,7 +43,7 @@ class Clear():
 
 
 
-
+    #Realiza la transformacion dependiendo del symbol
     def clean_special_operators(self,symbol, new_expression):
         #pop the symbol
         new_expression.pop()
@@ -100,7 +102,7 @@ class Clear():
         return new_expression
 
 
-
+    #Realiza la transformacion de los simbolos especiales
     def make_changes_operators(self):
         new_expression = []
 
