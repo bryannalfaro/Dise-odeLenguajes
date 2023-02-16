@@ -130,7 +130,7 @@ class PositiveClosure(Operator):
         expression = list(expression)
         expression_len = len(expression)
         index = expression.index(self.symbol)
-        print('ja')
+        #print('ja')
         try:
             while flag and expression_len>0:
                 #print('ja')

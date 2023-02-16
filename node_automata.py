@@ -96,17 +96,22 @@ class Node():
                 a1.finals.is_final=False
                 state_join.is_final=False
             i = automatas[iterator]
+            #print(i.transitions)
+            states_count = 0
             for j in i.transitions:
+
                 transition_dict = i.transitions[j]
                 for symbol in transition_dict:
+
                     symbol_dict = transition_dict[symbol]
+
                     for state in symbol_dict:
-                        if iterator==0:
-
-                            automata.make_movement(symbol,j, state)
-                        else:
+                        #print(iterator,states_count)
+                        if iterator==1 and states_count==0:
                             automata.make_movement(symbol,state_join, state)
-
+                        else:
+                            automata.make_movement(symbol,j, state)
+                    states_count+=1
         return automata
 
 
@@ -127,6 +132,7 @@ class Node():
             i = nodes_postorder[i]
             #check if it is an alphabet symbol
             if i.value not in self.symbols:
+
                 self.automata.append(self.make_alphabetic_automata(i))
             if i.value == Union().symbol:
                 automata1 = self.automata.pop()
@@ -134,10 +140,11 @@ class Node():
 
                 self.automata.append(self.make_or_automata(automata1,automata2))
             if i.value == KleeneStar().symbol:
-                print(len(self.automata))
+
                 automata1 = self.automata.pop()
                 self.automata.append(self.make_kleene_automata(automata1))
             if i.value == Concatenation().symbol:
+
                 automata1 = self.automata.pop()
                 automata2 = self.automata.pop()
                 self.automata.append(self.make_concatenation_automata(automata1,automata2))
