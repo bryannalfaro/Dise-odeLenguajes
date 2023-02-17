@@ -1,3 +1,8 @@
+#TODO
+#Ascii
+#Valores counter
+#Epsilons
+#Flujo al error
 from expr_postfix import PostfixConverter
 
 #initialize alphabet
@@ -18,10 +23,17 @@ with open('pruebas.txt') as f:
 expression_postfix = PostfixConverter(expression)
 expression_postfix.build_Alphabet()
 postfix = expression_postfix.convertToPostfix() #Get postfix
-print(postfix)
+print('Postfix: ',postfix)
 node_root = expression_postfix.make_nodes(postfix)#nodo root
 
 
 nodes_postorder = node_root.make_postorder()
 afn = node_root.make_automata(nodes_postorder)
+
+
+print('Estados :',afn.states)
+print('Transiciones: ',afn.transitions)
+print('Estado inicial: ',afn.initial)
+print('Estado final: ',afn.finals)
+print('Alfabeto: ',afn.alphabet)
 afn.visualize()

@@ -17,7 +17,7 @@ class Node():
         state1 = State(True,False)
         state2 = State(False,True)
         transition = dict()
-        automata = AFN_automata([state1,state2],node.value,[transition],state1,state2)
+        automata = AFN_automata([state1,state2],[node.value],[transition],state1,state2)
 
         automata.make_movement(node.value, state1, state2)
 
