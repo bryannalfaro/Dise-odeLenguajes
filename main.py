@@ -1,6 +1,3 @@
-#TODO
-#Ascii
-#Epsilons
 from expr_postfix import PostfixConverter
 
 #initialize alphabet

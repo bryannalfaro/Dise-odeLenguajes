@@ -26,7 +26,10 @@ class PostfixConverter:
         flag_validation = Clear(self.expression,self.symbols).validate_expression_parenthesis()
         #check operators
         flag_operators = Clear(self.expression,self.symbols).validate_expression_operators()
-        if flag_validation == False or flag_operators == False:
+
+        flag_parentesis = Clear(self.expression,self.symbols).validate_expression_inside_parenthesis(self.alphabet)
+        #print(flag_parentesis)
+        if flag_validation == False or flag_operators == False or flag_parentesis == False:
             print("Error: invalid expression")
             validate = False
             postfix = ""

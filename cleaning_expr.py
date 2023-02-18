@@ -19,6 +19,77 @@ class Clear():
         else:
             return True
 
+        #validate if inside parentheses there is a symbol
+    def validate_expression_inside_parenthesis(self,alphabet):
+        opening_parenthesis = [LeftParenthesis().symbol]
+        closing_parenthesis = [RightParenthesis().symbol]
+        #print(alphabet.getAlphabetNames())
+        flag_parenthesis = True
+        #print(self.expression)
+        if alphabet == []:
+             flag_parenthesis = False
+        else:
+
+            a = []
+            inside = []
+            external_letters = []
+            new_expression = list(self.expression)
+
+            while len(new_expression) > 0 :
+                #print('new while',new_expression)
+                value = new_expression[-1]
+                #print('outside',value)
+
+                if value == RightParenthesis().symbol:
+                    #print('right')
+                    counter_R = 0 #Count if there are more than one parenthesis
+                    counter_L = 0
+                    new_expression.pop()
+                    #print('right',new_expression)
+
+                    #iterate until you find the left parenthesis
+                    while len(new_expression) > 0:
+                        value = new_expression[-1]
+                        #print('value',value)
+                        #print('counters',counter_R,counter_L)
+                        if value != LeftParenthesis().symbol and value != RightParenthesis().symbol:
+                            inside.append(new_expression.pop())
+                        elif value == LeftParenthesis().symbol and counter_R == counter_L:
+                            new_expression.pop()
+                            break
+                        elif value == LeftParenthesis().symbol and counter_R != counter_L:
+                            counter_L += 1
+                            inside = inside[::-1]
+                            #print('asdfsfaf', inside)
+                            if inside[0] == RightParenthesis().symbol:
+                                inside = []
+                                break
+                            else:
+                                inside.append(new_expression.pop())
+                        else:
+                            counter_R += 1
+                            inside.append(new_expression.pop()) #PROVISIONAL
+
+                    if inside == []:
+                        #print('ahsdfklasfdlk')
+                        flag_parenthesis = False
+                        break
+                    else:
+                        flag_parenthesis = True
+                    #print("inside",inside)
+                    inside = []
+                    #print('valuddde',value)
+                    #print(len(new_expression))
+                    #print(flag_parenthesis)
+                    #print("inside",inside)
+                    #print("new expresion right",new_expression)
+                if flag_parenthesis == False:
+                    break
+                elif flag_parenthesis == True and len(new_expression) > 0:
+                    new_expression.pop()
+
+        return flag_parenthesis
+
     #Valida las necesidades de cada operador
     def validate_expression_operators(self):
         operators = [KleeneStar().symbol, Concatenation().symbol, Union().symbol, QuestionMark().symbol, PositiveClosure().symbol]

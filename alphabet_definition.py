@@ -7,6 +7,12 @@ class AlphabetDefinition:
     def getAlphabet(self):
         return self.alphabet
 
+    def getAlphabetNames(self):
+        names = []
+        for i in self.alphabet:
+            names.append(i.name)
+        return names
+
     def addSymbol(self, symbol):
         self.alphabet.append(symbol)
 
