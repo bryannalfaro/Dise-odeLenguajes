@@ -22,6 +22,6 @@ class Automata():
                 #print(self.transitions[transition][symbol])
                 for transition_final in self.transitions[transition][symbol]:
                     #print(transition_final)
-                    graph_dot.edge(transition.__str__(),transition_final.__str__(),label=symbol)
+                    graph_dot.edge(transition.__str__(),transition_final.__str__(),label=str(symbol))
 
         graph_dot.render(directory='test-output', view=True)

@@ -3,6 +3,7 @@ from state_definition import State
 from afn_automata import AFN_automata
 from alphabet_definition import AlphabetDefinition
 from operators import *
+from Symbol import Symbol
 
 class Node():
     def __init__(self, value):
@@ -17,9 +18,9 @@ class Node():
         state1 = State(True,False)
         state2 = State(False,True)
         transition = dict()
-        automata = AFN_automata([state1,state2],[node.value],[transition],state1,state2)
+        automata = AFN_automata([state1,state2],[Symbol(node.value).ascii_repr],[transition],state1,state2)
 
-        automata.make_movement(node.value, state1, state2)
+        automata.make_movement(Symbol(node.value).ascii_repr, state1, state2)
 
         return automata
 

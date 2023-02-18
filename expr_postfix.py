@@ -5,7 +5,7 @@ from alphabet_definition import AlphabetDefinition
 from operators import *
 from node_automata import Node
 from cleaning_expr import Clear
-
+from Symbol import Symbol
 class PostfixConverter:
     def __init__(self, expression):
         self.expression = expression
@@ -18,7 +18,7 @@ class PostfixConverter:
     def build_Alphabet(self):
         for i in self.expression:
             if i not in self.symbols:
-                self.alphabet.addSymbol(i)
+                self.alphabet.addSymbol(Symbol(i))
 
 
     def convertToPostfix(self):
