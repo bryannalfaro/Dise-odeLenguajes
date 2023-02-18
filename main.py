@@ -1,16 +1,20 @@
 #TODO
 #Ascii
-#Valores counter
 #Epsilons
-#Flujo al error
 from expr_postfix import PostfixConverter
 
 #initialize alphabet
+validate =False
+while validate == False:
 
-expression = input("Enter an expression: ")
-if expression == "":
-    print("Error: empty expression")
-    exit(1)
+    expression = input("Enter an expression: ")
+    if expression == "":
+        print("Error: empty expression")
+    else:
+        expression_postfix = PostfixConverter(expression)
+        expression_postfix.build_Alphabet()
+        postfix,validate= expression_postfix.convertToPostfix(validate) #Get postfix
+
 
 '''#for every expression in pruebas.txt print the postfix expression
 with open('pruebas.txt') as f:
@@ -20,9 +24,7 @@ with open('pruebas.txt') as f:
         expression_postfix.build_Alphabet()
         expression_postfix.convertToPostfix()'''
 
-expression_postfix = PostfixConverter(expression)
-expression_postfix.build_Alphabet()
-postfix = expression_postfix.convertToPostfix() #Get postfix
+
 print('Postfix: ',postfix)
 node_root = expression_postfix.make_nodes(postfix)#nodo root
 

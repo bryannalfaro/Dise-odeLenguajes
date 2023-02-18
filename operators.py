@@ -30,7 +30,7 @@ class KleeneStar(Operator):
                 counter += 1
                 expression_len -= 1
         except:
-          print('except kleene')
+          #print('except kleene')
           flag = False
         return flag
 

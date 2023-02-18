@@ -28,15 +28,16 @@ class Node():
         #make automata for or operator
         state1 = State(True,False)
         state2 = State(False,True)
+        epsilon = Symbol('ε').ascii_repr
         automatas = [a1,a2]
         transition = dict()
         automata = AFN_automata([state1,state2],[],[transition],state1,state2)
 
-        automata.make_movement('e',state1, a1.initial)
-        a1.make_movement('e',a1.finals, state2)
+        automata.make_movement(epsilon,state1, a1.initial)
+        a1.make_movement(epsilon,a1.finals, state2)
 
-        automata.make_movement('e',state1, a2.initial)
-        a2.make_movement('e',a2.finals, state2)
+        automata.make_movement(epsilon,state1, a2.initial)
+        a2.make_movement(epsilon,a2.finals, state2)
 
         for i in range(len(automatas)):
             i = automatas[i]
@@ -64,11 +65,11 @@ class Node():
         state2 = State(False,True)
         transition = dict()
         automata = AFN_automata([state1,state2],[],[transition],state1,state2)
-
-        automata.make_movement('e',state1, a1.initial)
-        automata.make_movement('e',state1, state2)
-        a1.make_movement('e',a1.finals, state2)
-        a1.make_movement('e',a1.finals, a1.initial)
+        epsilon = Symbol('ε').ascii_repr
+        automata.make_movement(epsilon,state1, a1.initial)
+        automata.make_movement(epsilon,state1, state2)
+        a1.make_movement(epsilon,a1.finals, state2)
+        a1.make_movement(epsilon,a1.finals, a1.initial)
 
         a1.finals.is_final=False
 
