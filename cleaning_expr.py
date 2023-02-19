@@ -21,18 +21,13 @@ class Clear():
 
         #validate if inside parentheses there is a symbol
     def validate_expression_inside_parenthesis(self,alphabet):
-        opening_parenthesis = [LeftParenthesis().symbol]
-        closing_parenthesis = [RightParenthesis().symbol]
         #print(alphabet.getAlphabetNames())
         flag_parenthesis = True
         #print(self.expression)
         if alphabet == []:
              flag_parenthesis = False
         else:
-
-            a = []
             inside = []
-            external_letters = []
             new_expression = list(self.expression)
 
             while len(new_expression) > 0 :
