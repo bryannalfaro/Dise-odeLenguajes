@@ -10,6 +10,7 @@ class Automata():
     #visualize the automata with graphviz
     def visualize(self):
         graph_dot = Digraph('automata1',format='pdf')
+        graph_dot.attr(rankdir='LR')
         for state in self.states:
             if state.is_initial:
                 graph_dot.node(state.name, state.name, shape='circle')

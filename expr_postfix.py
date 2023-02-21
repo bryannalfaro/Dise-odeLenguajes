@@ -1,6 +1,3 @@
-#TODO
-#validaciones
-#start graph
 from alphabet_definition import AlphabetDefinition
 from operators import *
 from node_automata import Node
@@ -35,9 +32,6 @@ class PostfixConverter:
             postfix = ""
         else:
             self.expression = Clear(self.expression,self.symbols).preprocess()
-            #print(''.join(self.expression))
-            #print(self.expression)
-
             #Iterate through the expression
             print(''.join(self.expression))
             for i in self.expression:

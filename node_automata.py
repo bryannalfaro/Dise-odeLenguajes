@@ -44,18 +44,11 @@ class Node():
             i.finals.is_final=False
 
             #add transition from automata i to the automata
-
             for j in i.transitions:
-                #print(j)
                 transition_dict = i.transitions[j]
-                #print(type(j))
                 for symbol in transition_dict:
-                    #print(symbol)
                     symbol_dict = transition_dict[symbol]
                     for state in symbol_dict:
-                        #print(state)
-                        #print(j)
-                        #print(symbol)
                         automata.make_movement(symbol,j, state)
         return automata
 
@@ -98,7 +91,6 @@ class Node():
                 a1.finals.is_final=False
                 state_join.is_final=False
             i = automatas[iterator]
-            #print(i.transitions)
             states_count = 0
             for j in i.transitions:
 
@@ -108,7 +100,6 @@ class Node():
                     symbol_dict = transition_dict[symbol]
 
                     for state in symbol_dict:
-                        #print(iterator,states_count)
                         if iterator==1 and states_count==0:
                             automata.make_movement(symbol,state_join, state)
                         else:

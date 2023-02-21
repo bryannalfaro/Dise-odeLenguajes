@@ -54,8 +54,6 @@ class Union(Operator):
             while flag and expression_len>0:
 
                 if expression[counter] == self.symbol:
-
-                    #print('expression',expression[counter],expression[:expression.index('|')][-1],expression[expression.index("|")+1:])
                     if expression[:index][-1] == self.symbol:
                         flag = False
                     elif expression[index+1:][0] == self.symbol or (expression[index+1:][0] != (LeftParenthesis().symbol) and expression[index+1:][0] in alphabet):
@@ -130,11 +128,8 @@ class PositiveClosure(Operator):
         expression = list(expression)
         expression_len = len(expression)
         index = expression.index(self.symbol)
-        #print('ja')
         try:
             while flag and expression_len>0:
-                #print('ja')
-                #print('ja',expression[:index][-1])
                 if expression[counter] == self.symbol:
                     if expression[:index][-1] == Union().symbol:
                         flag = False

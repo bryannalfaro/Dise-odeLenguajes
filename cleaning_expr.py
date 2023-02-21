@@ -21,9 +21,7 @@ class Clear():
 
         #validate if inside parentheses there is a symbol
     def validate_expression_inside_parenthesis(self,alphabet):
-        #print(alphabet.getAlphabetNames())
         flag_parenthesis = True
-        #print(self.expression)
         if alphabet == []:
              flag_parenthesis = False
         else:
@@ -31,22 +29,17 @@ class Clear():
             new_expression = list(self.expression)
 
             while len(new_expression) > 0 :
-                #print('new while',new_expression)
+
                 value = new_expression[-1]
-                #print('outside',value)
 
                 if value == RightParenthesis().symbol:
-                    #print('right')
                     counter_R = 0 #Count if there are more than one parenthesis
                     counter_L = 0
                     new_expression.pop()
-                    #print('right',new_expression)
 
                     #iterate until you find the left parenthesis
                     while len(new_expression) > 0:
                         value = new_expression[-1]
-                        #print('value',value)
-                        #print('counters',counter_R,counter_L)
                         if value != LeftParenthesis().symbol and value != RightParenthesis().symbol:
                             inside.append(new_expression.pop())
                         elif value == LeftParenthesis().symbol and counter_R == counter_L:
@@ -55,7 +48,7 @@ class Clear():
                         elif value == LeftParenthesis().symbol and counter_R != counter_L:
                             counter_L += 1
                             inside = inside[::-1]
-                            #print('asdfsfaf', inside)
+
                             if inside[0] == RightParenthesis().symbol:
                                 inside = []
                                 break
@@ -63,21 +56,15 @@ class Clear():
                                 inside.append(new_expression.pop())
                         else:
                             counter_R += 1
-                            inside.append(new_expression.pop()) #PROVISIONAL
+                            inside.append(new_expression.pop())
 
                     if inside == []:
-                        #print('ahsdfklasfdlk')
                         flag_parenthesis = False
                         break
                     else:
                         flag_parenthesis = True
-                    #print("inside",inside)
                     inside = []
-                    #print('valuddde',value)
-                    #print(len(new_expression))
-                    #print(flag_parenthesis)
-                    #print("inside",inside)
-                    #print("new expresion right",new_expression)
+
                 if flag_parenthesis == False:
                     break
                 elif flag_parenthesis == True and len(new_expression) > 0:
@@ -118,9 +105,7 @@ class Clear():
         external_letters = []
 
         while len(new_expression) > 0 :
-            #print('new while',new_expression)
             value = new_expression[-1]
-            #print('value',value)
             #evaluate value not in symbols
             if value != RightParenthesis().symbol:
                 if inside != []: #demas letras
@@ -137,7 +122,6 @@ class Clear():
                 counter_R = 0 #Count if there are more than one parenthesis
                 counter_L = 0
                 new_expression.pop()
-                #print('right',new_expression)
 
                 #iterate until you find the left parenthesis
                 while len(new_expression) > 0:
@@ -155,8 +139,6 @@ class Clear():
                         inside.append(new_expression.pop()) #PROVISIONAL
                 inside = list((symbol.get_representation(''.join(reversed(inside)))))
                 new_expression = new_expression + inside
-                #print("inside",inside)
-                #print("new expresion right",new_expression)
                 break
             else:
                 pass
@@ -174,8 +156,6 @@ class Clear():
 
         for i in range(len(self.expression)):
             new_expression.append(self.expression[i])
-            #print("new_expression for",new_expression)
-
             if self.expression[i] == QuestionMark().symbol:
                 new_expression = self.clean_special_operators(QuestionMark(), new_expression)
             elif self.expression[i] == PositiveClosure().symbol:
@@ -190,7 +170,6 @@ class Clear():
 
         self.expression = self.make_changes_operators()
         self.expression = ''.join(self.expression)
-        #print('after symbols',self.expression)
 
         for i in range(len(self.expression)):
             new_expression.append(self.expression[i])
