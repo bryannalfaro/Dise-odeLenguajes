@@ -41,16 +41,14 @@ class AFN_automata(Automata):
     def make_dfa(self):
         d_states = []
         state = State()
+        state.is_initial = True
         d_tran = dict()
         state.list = self.epsilon_closure(self.initial)
         d_states.append(state)
 
         #while there is unmarked states in d_states
         while len([state for state in d_states if state.mark_dfa == False]) > 0:
-            print('WHILE',[state for state in d_states if state.mark_dfa == False])
-            #print('DSTATE',d_states)
-            #mark the state
-            print('DSTATES',d_states)
+
             for state in [state for state in d_states if state.mark_dfa == False]:
                 if state.mark_dfa == False:
                     state.mark_dfa = True
@@ -59,28 +57,19 @@ class AFN_automata(Automata):
                         if symbol == Symbol('ε').name: #CAMBIAR A  ASCII
                             pass
                         else:
-                            #print('move',self.move_dfa(state, symbol))
                             U = self.epsilon_closure(self.move_dfa(state, symbol))
-                            print('U',U)
-
-                            #validate if U.list is in d_states
-                            print('DSTATES2',d_states)
 
                             for i in d_states:
                                 flag = False
                                 if U == i.list:
-                                    print('IS',state,symbol,i)
                                     #make dictionary
                                     if state in d_tran:
                                         d_tran[state][symbol] = [i]
                                     else:
                                         d_tran[state] = {symbol:[i]}
-                                    #print('D_TRAN2',d_tran)
                                     break
                                 elif U == []:
                                     pass
-
-
                                 else:
                                     flag = True
                             if flag == True:
@@ -93,17 +82,15 @@ class AFN_automata(Automata):
                                     else:
                                         d_tran[state] = {symbol:[new_state]}
 
-                                    print('D_TRAN',d_tran)
-
         final_states = []
         #if a state in state.list has a final state of NFA
         for state in d_states:
             for state_final in state.list:
                 if state_final.is_final:
+                    state.is_final = True
                     final_states.append(state)
-        dfa = DFA_automata(d_states, self.alphabet, [d_tran], d_states[0], final_states)
 
-        print(d_states, d_tran)
+        dfa = DFA_automata(d_states, self.alphabet, [d_tran], d_states[0], final_states)
         return dfa
 
 
@@ -119,7 +106,6 @@ class AFN_automata(Automata):
         return movements_epsilon
 
     def epsilon_closure(self, state):
-        print('state: ', state)
         #make an stak to store the states
         stack = []
         if type(state)==State:
@@ -144,8 +130,6 @@ class AFN_automata(Automata):
     def move_dfa(self, state, symbol):
         #See with symbol can be reached from state
         movements = []
-        print('MOVE DFA',state,symbol)
-        print('LIST STATES',state.list)
         #check every list of the state
         for state in state.list:
             for transition in self.transitions:
@@ -154,7 +138,6 @@ class AFN_automata(Automata):
                         if symbol_transition == symbol:
                             for transition_final in self.transitions[state][symbol_transition]:
                                 movements.append(transition_final)
-        print('FINAL MOVE DFA',movements)
         return movements
 
 
