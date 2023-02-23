@@ -18,11 +18,11 @@ class Automata():
                 graph_dot.node(state.name, state.name, shape='doublecircle')
 
         for transition in self.transitions:
-            #print(self.transitions[transition])
+            print('jeje',self.transitions[transition])
             for symbol in self.transitions[transition]:
-                #print(self.transitions[transition][symbol])
+                print(self.transitions[transition][symbol])
                 for transition_final in self.transitions[transition][symbol]:
                     #print(transition_final)
                     graph_dot.edge(transition.__str__(),transition_final.__str__(),label=str(symbol))
 
-        graph_dot.render(directory='test-output', view=True)
+        graph_dot.render(directory='test-output',view=True)
