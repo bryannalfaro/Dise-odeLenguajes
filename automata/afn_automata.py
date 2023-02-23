@@ -140,5 +140,23 @@ class AFN_automata(Automata):
                                 movements.append(transition_final)
         return movements
 
+    def simulate_nfa(self, word):
+        #make the epsilon closure of the initial state
+        current_state = self.epsilon_closure(self.initial)
+        #for each symbol in the word
+        for symbol in word:
+            #make the move
+            state = State()
+            state.list = current_state
+            current_state = self.move_dfa(state, symbol)
+
+            #make the epsilon closure
+            current_state = self.epsilon_closure(current_state)
+        #if the current state is a final state
+        for state in current_state:
+            if state.is_final:
+                return True
+        return False
+
 
 
