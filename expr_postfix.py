@@ -1,6 +1,6 @@
 from alphabet_definition import AlphabetDefinition
 from operators import *
-from node_automata import Node
+from automata.node_automata import Node
 from cleaning_expr import Clear
 from Symbol import Symbol
 class PostfixConverter:
@@ -20,14 +20,20 @@ class PostfixConverter:
 
     def convertToPostfix(self,validate):
         #clean the expression
-        flag_validation = Clear(self.expression,self.symbols).validate_expression_parenthesis()
-        #check operators
-        flag_operators = Clear(self.expression,self.symbols).validate_expression_operators()
+        flag_validation,error_message = Clear(self.expression,self.symbols).validate_expression_parenthesis()
 
-        flag_parentesis = Clear(self.expression,self.symbols).validate_expression_inside_parenthesis(self.alphabet)
+        #check operators
+        flag_operators,error_message_op = Clear(self.expression,self.symbols).validate_expression_operators()
+
+        flag_parentesis,error_message_empty = Clear(self.expression,self.symbols).validate_expression_inside_parenthesis(self.alphabet)
         #print(flag_parentesis)
         if flag_validation == False or flag_operators == False or flag_parentesis == False:
-            print("Error: invalid expression")
+            if error_message != "":
+                print(error_message)
+            if error_message_op != "":
+                print(error_message_op)
+            if error_message_empty != "":
+                print(error_message_empty)
             validate = False
             postfix = ""
         else:

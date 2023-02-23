@@ -9,15 +9,28 @@ class Clear():
         opening_parenthesis = [LeftParenthesis().symbol]
         closing_parenthesis = [RightParenthesis().symbol]
         counter_parenthesis = 0
-        for i in self.expression:
-            if i in opening_parenthesis:
+        positions_opening = []
+        positions_closing = []
+
+        for i in range(len(self.expression)):
+            if self.expression[i] in opening_parenthesis:
                 counter_parenthesis += 1
-            elif i in closing_parenthesis:
+                positions_opening.append(i)
+            elif self.expression[i] in closing_parenthesis:
                 counter_parenthesis -= 1
+                if positions_opening != []:
+                    positions_opening.pop()
+                else:
+                    positions_closing.append(i)
         if counter_parenthesis != 0:
-            return False
+
+            if positions_opening != []:
+
+                return False, "Error: Missing closing parenthesis of parenthesis in position " + ','.join(map(str, positions_opening))
+            elif positions_closing != []:
+                return False, "Error: Missing opening parenthesis of parenthesis in position " + ','.join(map(str, positions_closing))
         else:
-            return True
+            return True, ""
 
         #validate if inside parentheses there is a symbol
     def validate_expression_inside_parenthesis(self,alphabet):
@@ -47,7 +60,7 @@ class Clear():
                             break
                         elif value == LeftParenthesis().symbol and counter_R != counter_L:
                             counter_L += 1
-                            inside = inside[::-1]
+                            inside = inside[::-1] #reverse the list
 
                             if inside[0] == RightParenthesis().symbol:
                                 inside = []
@@ -69,30 +82,36 @@ class Clear():
                     break
                 elif flag_parenthesis == True and len(new_expression) > 0:
                     new_expression.pop()
-
-        return flag_parenthesis
+        if flag_parenthesis == False:
+            return flag_parenthesis, "Error: Empty parenthesis"
+        else:
+         return flag_parenthesis, ""
 
     #Valida las necesidades de cada operador
     def validate_expression_operators(self):
         operators = [KleeneStar().symbol, Concatenation().symbol, Union().symbol, QuestionMark().symbol, PositiveClosure().symbol]
         flag_operator = True
+        error = ""
         for i in range(len(self.expression)):
             if self.expression[i] in operators and flag_operator ==True:
                 if self.expression[i] == Union().symbol:
+
                     #check if has a symbol before and after
-                    flag_operator = Union().valid_operation(self.expression,self.symbols)
+                    flag_operator,error = Union().valid_operation(self.expression,self.symbols)
                 elif self.expression[i] == KleeneStar().symbol:
-                    flag_operator = KleeneStar().valid_operation(self.expression)
+
+                    flag_operator,error = KleeneStar().valid_operation(self.expression)
+
                 elif self.expression[i] == QuestionMark().symbol:
-                    flag_operator = QuestionMark().valid_operation(self.expression)
+                    flag_operator,error = QuestionMark().valid_operation(self.expression)
                 elif self.expression[i] == PositiveClosure().symbol:
 
-                    flag_operator = PositiveClosure().valid_operation(self.expression)
+                    flag_operator,error = PositiveClosure().valid_operation(self.expression)
             elif flag_operator == False:
                 break
             else:
                 pass
-        return flag_operator
+        return flag_operator,error
 
 
 

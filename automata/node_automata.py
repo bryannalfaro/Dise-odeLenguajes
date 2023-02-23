@@ -1,6 +1,6 @@
 #Node for the automata
 from state_definition import State
-from afn_automata import AFN_automata
+from automata.afn_automata import AFN_automata
 from alphabet_definition import AlphabetDefinition
 from operators import *
 from Symbol import Symbol

@@ -18,21 +18,23 @@ class KleeneStar(Operator):
         expression_len = len(expression)
         flag = True
         counter = 0
+        err_msg = ''
         expression = list(expression)
         expression_len = len(expression)
         index = expression.index(self.symbol)
-        try:
-            while flag and expression_len>0:
 
-                if expression[counter] == self.symbol:
-                    if expression[:index][-1] == Union().symbol:
-                        flag = False
-                counter += 1
-                expression_len -= 1
-        except:
-          #print('except kleene')
-          flag = False
-        return flag
+        while flag and expression_len>0:
+            if counter == 0 and expression[counter] == self.symbol:
+                flag = False
+                err_msg = "Error: Expected one symbol before the kleene star operator at position "+str(index)
+            elif expression[counter] == self.symbol:
+                if expression[:index][-1] == Union().symbol:
+                    err_msg = "Error: Invalid expression at position "+str(index)
+                    flag = False
+            counter += 1
+            expression_len -= 1
+
+        return flag,err_msg
 
 #Make concatenation operator
 class Concatenation(Operator):
@@ -48,21 +50,29 @@ class Union(Operator):
         flag = True
         counter = 0
         expression = list(expression)
+        error_msg = ''
         expression_len = len(expression)
         index = expression.index(self.symbol)
-        try:
-            while flag and expression_len>0:
 
-                if expression[counter] == self.symbol:
-                    if expression[:index][-1] == self.symbol:
-                        flag = False
-                    elif expression[index+1:][0] == self.symbol or (expression[index+1:][0] != (LeftParenthesis().symbol) and expression[index+1:][0] in alphabet):
-                        flag = False
-                counter += 1
-                expression_len -= 1
-        except:
-          flag = False
-        return flag
+        while flag and expression_len>0:
+            if counter == 0 and expression[counter] == self.symbol:
+                flag = False
+                error_msg ="Error: Expected one symbol before the union operator at position "+str(index)
+            elif expression[counter] == self.symbol and expression_len == 1:
+                flag = False
+                error_msg ="Error: Expected one symbol after the union operator at position "+str(index)
+            elif expression[counter] == self.symbol:
+                index = counter
+                if expression[:index][-1] == self.symbol:
+                    error_msg = "Error: Invalid expression at position "+str(index)
+                    flag = False
+                elif expression[index+1:][0] == self.symbol or (expression[index+1:][0] != (LeftParenthesis().symbol) and expression[index+1:][0] in alphabet):
+                    error_msg = "Error: Invalid expression at position "+str(index+1)
+                    flag = False
+            counter += 1
+            expression_len -= 1
+
+        return flag,error_msg
 
 #Make left parenthesis operator
 class LeftParenthesis(Operator):
@@ -95,17 +105,20 @@ class QuestionMark(Operator):
         expression = list(expression)
         expression_len = len(expression)
         index = expression.index(self.symbol)
-        try:
-            while flag and expression_len>0:
+        err_msg = ''
 
-                if expression[counter] == self.symbol:
-                    if expression[:index][-1] == Union().symbol:
-                        flag = False
-                counter += 1
-                expression_len -= 1
-        except:
-          flag = False
-        return flag
+        while flag and expression_len>0:
+            if counter == 0 and expression[counter] == self.symbol:
+                flag = False
+                err_msg = "Error: Expected one symbol before the question mark operator at position "+str(index)
+            elif expression[counter] == self.symbol:
+                if expression[:index][-1] == Union().symbol:
+                    err_msg = "Error: Invalid expression at position "+str(index)
+                    flag = False
+            counter += 1
+            expression_len -= 1
+
+        return flag,err_msg
 
 
 #Positive closure operator
@@ -125,20 +138,22 @@ class PositiveClosure(Operator):
         expression_len = len(expression)
         flag = True
         counter = 0
+        err_msg = ''
         expression = list(expression)
         expression_len = len(expression)
         index = expression.index(self.symbol)
-        try:
-            while flag and expression_len>0:
-                if expression[counter] == self.symbol:
-                    if expression[:index][-1] == Union().symbol:
-                        flag = False
-                counter += 1
-                expression_len -= 1
-        except:
-          print('except')
-          flag = False
-        return flag
+        while flag and expression_len>0:
+            if counter == 0 and expression[counter] == self.symbol:
+                flag = False
+                err_msg = "Error: Expected one symbol before the positive closure operator at position "+str(index)
+            elif expression[counter] == self.symbol:
+                if expression[:index][-1] == Union().symbol:
+                    err_msg = "Error: Invalid expression at position "+str(index)
+                    flag = False
+            counter += 1
+            expression_len -= 1
+
+        return flag,err_msg
 
 #Make epsilon operator
 class Epsilon(Operator):

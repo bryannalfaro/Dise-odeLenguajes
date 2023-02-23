@@ -1,4 +1,4 @@
-from automata import Automata
+from automata.automata import Automata
 class AFN_automata(Automata):
     def __init__(self, states, alphabet, transitions, initial, finals):
         super().__init__(states, alphabet, transitions, initial, finals)
