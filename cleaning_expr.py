@@ -21,7 +21,7 @@ class Clear():
                 if positions_opening != []:
                     positions_opening.pop()
                 else:
-                    positions_closing.append(i)
+                    positions_closing.append(i) #hay mas derechos que izquierdos
         if counter_parenthesis != 0:
 
             if positions_opening != []:
@@ -155,7 +155,7 @@ class Clear():
                         inside.append(new_expression.pop())
                     else:
                         counter_R += 1
-                        inside.append(new_expression.pop()) #PROVISIONAL
+                        inside.append(new_expression.pop())
                 inside = list((symbol.get_representation(''.join(reversed(inside)))))
                 new_expression = new_expression + inside
                 break
