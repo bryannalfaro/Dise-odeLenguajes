@@ -36,3 +36,5 @@ print('Estado inicial: ',afn.initial)
 print('Estado final: ',afn.finals)
 print('Alfabeto: ',afn.alphabet)
 afn.visualize()
+
+afn.make_dfa()
