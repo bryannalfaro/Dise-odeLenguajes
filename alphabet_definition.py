@@ -14,7 +14,8 @@ class AlphabetDefinition:
         return names
 
     def addSymbol(self, symbol):
-        self.alphabet.append(symbol)
+        if symbol.name not in self.getAlphabetNames():
+         self.alphabet.append(symbol)
 
         #get symbol dictionary, ADD EPSILON OR NOT
     def getSymbolDictionary(self):
