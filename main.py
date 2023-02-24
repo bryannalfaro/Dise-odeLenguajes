@@ -1,3 +1,5 @@
+#TODO
+#bug con epsilon
 from expr_postfix import PostfixConverter
 
 #initialize alphabet
