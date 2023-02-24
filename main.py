@@ -68,8 +68,10 @@ postorder_labeled= node_root.label_leafs()
 
 node_root.make_rules(postorder_labeled)
 
+print(node_root.follow)
+dfa = node_root.make_dfa_direct()
 for node in postorder_labeled:
     #print null
-    print(node.value,node.null_node,node.firstpos,node.lastpos)
+    print(node.value,node.null_node,node.firstpos,node.lastpos,node.follow)
 
 

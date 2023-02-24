@@ -16,6 +16,7 @@ class Node():
         self.symbols = AlphabetDefinition().getSymbolDictionary()
         self.label_leaf = None
         self.null_node = None
+        self.follow = dict()
 
 
     def make_alphabetic_automata(self,node):
@@ -152,13 +153,22 @@ class Node():
 
     def make_rules(self,nodes_labeled):
         #calculate nullable
+        #fill followpos dictionary with empty sets of leafs
+        for i in Node.leaf_node:
+            self.follow[i.label_leaf]  = set()
+
         for i in range(len(nodes_labeled)):
             i = nodes_labeled[i]
             i.null_node = self.nullable(i)
             i.firstpos = self.firstpos(i)
             i.lastpos = self.lastpos(i)
-            if i == KleeneStar().symbol:
-                pass
+            if i.value == KleeneStar().symbol:
+                for j in i.lastpos:
+                    self.follow[j] = self.follow[j].union(i.firstpos)
+            if i.value == Concatenation().symbol:
+                for j in i.left.lastpos:
+                    self.follow[j] = self.follow[j].union(i.right.firstpos)
+
 
     def lastpos(self,node):
         if node.value == Symbol('ε').name:
