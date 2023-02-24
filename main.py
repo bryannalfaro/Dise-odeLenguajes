@@ -24,6 +24,7 @@ with open('pruebas.txt') as f:
         expression_postfix.convertToPostfix()'''
 
 #POSTFIX Y AFN
+print('POSTFIX Y AFN')
 print('Postfix: ',postfix)
 node_root = expression_postfix.make_nodes(postfix)#nodo root
 
@@ -37,17 +38,20 @@ print('Transiciones: ',afn.transitions)
 print('Estado inicial: ',afn.initial)
 print('Estado final: ',afn.finals)
 print('Alfabeto: ',afn.alphabet)
-#afn.visualize()
+afn.visualize()
 
-'''flag_sim = True
+print('----------------------------------------')
+print('SIMULACION AFN')
+flag_sim = True
 while flag_sim:
     afn_word = input("Enter a word: ")
     print('SIMULATION AFN SAYS: ',afn.simulate_nfa(afn_word))
 
     answer= input("Do you want to simulate another word? (y/f): ")
     if answer == 'f':
-        flag_sim = False'''
-
+        flag_sim = False
+print('----------------------------------------')
+print('AFN TO DFA WITH SUBSETS')
 dfa = afn.make_dfa()
 print('Estados :',dfa.states)
 print('Transiciones: ',dfa.transitions)
@@ -55,38 +59,42 @@ print('Estado inicial: ',dfa.initial)
 print('Estado final: ',dfa.finals)
 print('Alfabeto: ',dfa.alphabet)
 dfa.visualize()
+a = input() #solo para la siguiente
+print('----------------------------------------')
 
+print('DFA DIRECT')
 
 #direct dfa
 expression_postfix = PostfixConverter(expression,"#")
 
 postfix,validate= expression_postfix.convertToPostfix(validate)
 alfabeto = expression_postfix.build_Alphabet()
-print('ALF',alfabeto.getAlphabetNames())
+#print('ALF',alfabeto.getAlphabetNames())
 
-print('Postfix: ',postfix)
+#print('Postfix: ',postfix)
 node_root = expression_postfix.make_nodes(postfix)#nodo root
-print(node_root.value)
+#print(node_root.value)
 postorder_labeled= node_root.label_leafs()
 
 node_root.make_rules(postorder_labeled)
 
-print(node_root.follow)
+#print(node_root.follow)
 dfa = node_root.make_dfa_direct(alfabeto.getAlphabetNames())
 print('Estados :',dfa.states)
 print('Transiciones: ',dfa.transitions)
 print('Estado inicial: ',dfa.initial)
 print('Estado final: ',dfa.finals)
 print('Alfabeto: ',dfa.alphabet)
+dfa.visualize()
 
 #print state.list
-for state in dfa.states:
-    print(state,state.list)
+'''for state in dfa.states:
+    print(state,state.list)'''
 #dfa.visualize()
 
 
-for node in postorder_labeled:
+'''for node in postorder_labeled:
     #print null
     print(node.value,node.null_node,node.firstpos,node.lastpos,node.follow)
-
+'''
 

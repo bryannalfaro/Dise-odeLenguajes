@@ -308,15 +308,15 @@ class Node():
                                         else:
                                             d_tran[state] = {symbol:i}'''
 
-        print('DTRAN DFA',d_tran)
-        print('DSTATES DFA',d_states)
+        #print('DTRAN DFA',d_tran)
+        #print('DSTATES DFA',d_states)
 
         #get final states
         final_states = []
         #evaluate if there is # symbol
         for state in d_states:
             for i in state.list:
-                print('IIII',i,self.leaf_node[i].value)
+                #print('IIII',i,self.leaf_node[i].value)
                 if self.leaf_node[i].value == Symbol('#').name:
                     state.is_final = True
                     final_states.append(state)
