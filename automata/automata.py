@@ -12,7 +12,7 @@ class Automata():
         graph_dot = Digraph('automata1',format='pdf')
         graph_dot.attr(rankdir='LR')
         for state in self.states:
-            if state.is_initial:
+            if state.is_initial and state.is_final==False: #CORRECCION EPSILON
                 graph_dot.node(state.name, state.name, shape='circle')
             elif state.is_final:
                 graph_dot.node(state.name, state.name, shape='doublecircle')

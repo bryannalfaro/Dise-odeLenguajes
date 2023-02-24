@@ -1,5 +1,6 @@
 digraph automata1 {
 	rankdir=LR
-	8 [label=8 shape=circle]
-	8 -> 9 [label=a]
+	6 [label=6 shape=doublecircle]
+	7 [label=7 shape=doublecircle]
+	6 -> 7 [label=a]
 }

@@ -142,7 +142,8 @@ class Node():
         if self.left == None and self.right == None:
             #evaluate if it is epsilon
             if self.value == Symbol('ε').name:
-                 Node.leaf_node.append(self)
+                 #Node.leaf_node.append(self)  #PREGUNTAR!!!!!
+                 pass
             else:
                 self.label_leaf = Node.counter_leaf
                 Node.counter_leaf+=1
@@ -253,6 +254,7 @@ class Node():
 
                     #for each symbol
                     for symbol in alfabeto:
+                        print(alfabeto)
                         if symbol != Symbol('#').name:
 
                             #get the set of states that can be reached from state with symbol
@@ -314,6 +316,7 @@ class Node():
         #evaluate if there is # symbol
         for state in d_states:
             for i in state.list:
+                print('IIII',i,self.leaf_node[i].value)
                 if self.leaf_node[i].value == Symbol('#').name:
                     state.is_final = True
                     final_states.append(state)

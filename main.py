@@ -1,5 +1,5 @@
 #TODO
-#bug con epsilon
+#bug con epsilon , preguntar cambio en visualize y node_automata
 from expr_postfix import PostfixConverter
 
 #initialize alphabet
@@ -54,14 +54,15 @@ print('Transiciones: ',dfa.transitions)
 print('Estado inicial: ',dfa.initial)
 print('Estado final: ',dfa.finals)
 print('Alfabeto: ',dfa.alphabet)
-#dfa.visualize()
+dfa.visualize()
 
 
 #direct dfa
 expression_postfix = PostfixConverter(expression,"#")
-alfabeto = expression_postfix.build_Alphabet()
-print('ALF',alfabeto)
+
 postfix,validate= expression_postfix.convertToPostfix(validate)
+alfabeto = expression_postfix.build_Alphabet()
+print('ALF',alfabeto.getAlphabetNames())
 
 print('Postfix: ',postfix)
 node_root = expression_postfix.make_nodes(postfix)#nodo root
@@ -81,7 +82,7 @@ print('Alfabeto: ',dfa.alphabet)
 #print state.list
 for state in dfa.states:
     print(state,state.list)
-dfa.visualize()
+#dfa.visualize()
 
 
 for node in postorder_labeled:
