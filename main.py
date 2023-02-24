@@ -22,7 +22,7 @@ with open('pruebas.txt') as f:
         expression_postfix.convertToPostfix()'''
 
 #POSTFIX Y AFN
-'''print('Postfix: ',postfix)
+print('Postfix: ',postfix)
 node_root = expression_postfix.make_nodes(postfix)#nodo root
 
 
@@ -35,8 +35,7 @@ print('Transiciones: ',afn.transitions)
 print('Estado inicial: ',afn.initial)
 print('Estado final: ',afn.finals)
 print('Alfabeto: ',afn.alphabet)
-#afn.visualize()'''
-
+#afn.visualize()
 
 '''flag_sim = True
 while flag_sim:
@@ -45,7 +44,7 @@ while flag_sim:
 
     answer= input("Do you want to simulate another word? (y/f): ")
     if answer == 'f':
-        flag_sim = False
+        flag_sim = False'''
 
 dfa = afn.make_dfa()
 print('Estados :',dfa.states)
@@ -53,12 +52,13 @@ print('Transiciones: ',dfa.transitions)
 print('Estado inicial: ',dfa.initial)
 print('Estado final: ',dfa.finals)
 print('Alfabeto: ',dfa.alphabet)
-#dfa.visualize()'''
+#dfa.visualize()
 
 
 #direct dfa
 expression_postfix = PostfixConverter(expression,"#")
-expression_postfix.build_Alphabet()
+alfabeto = expression_postfix.build_Alphabet()
+print('ALF',alfabeto)
 postfix,validate= expression_postfix.convertToPostfix(validate)
 
 print('Postfix: ',postfix)
@@ -69,7 +69,19 @@ postorder_labeled= node_root.label_leafs()
 node_root.make_rules(postorder_labeled)
 
 print(node_root.follow)
-dfa = node_root.make_dfa_direct()
+dfa = node_root.make_dfa_direct(alfabeto.getAlphabetNames())
+print('Estados :',dfa.states)
+print('Transiciones: ',dfa.transitions)
+print('Estado inicial: ',dfa.initial)
+print('Estado final: ',dfa.finals)
+print('Alfabeto: ',dfa.alphabet)
+
+#print state.list
+for state in dfa.states:
+    print(state,state.list)
+dfa.visualize()
+
+
 for node in postorder_labeled:
     #print null
     print(node.value,node.null_node,node.firstpos,node.lastpos,node.follow)

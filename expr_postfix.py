@@ -21,6 +21,7 @@ class PostfixConverter:
         for i in self.expression:
             if i not in self.symbols:
                 self.alphabet.addSymbol(Symbol(i))
+        return self.alphabet
 
 
     def convertToPostfix(self,validate):

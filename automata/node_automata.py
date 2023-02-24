@@ -1,6 +1,7 @@
 #Node for the automata
 from state_definition import State
 from automata.afn_automata import AFN_automata
+from automata.dfa_automata import DFA_automata
 from alphabet_definition import AlphabetDefinition
 from operators import *
 from Symbol import Symbol
@@ -235,6 +236,96 @@ class Node():
                 automata2 = self.automata.pop()
                 self.automata.append(self.make_concatenation_automata(automata1,automata2))
         return self.automata.pop()
+
+
+    def make_dfa_direct(self,alfabeto):
+        d_states = []
+        state = State()
+        state.is_initial = True
+        d_tran = dict()
+        state.list = self.firstpos
+        d_states.append(state)
+        #while there is unmarked states in d_states
+        while len([state for state in d_states if state.mark_dfa == False])>0:
+            for state in [state for state in d_states if state.mark_dfa == False]:
+                if state.mark_dfa == False:
+                    state.mark_dfa = True
+
+                    #for each symbol
+                    for symbol in alfabeto:
+                        if symbol != Symbol('#').name:
+
+                            #get the set of states that can be reached from state with symbol
+                            u = set()
+                            for i in state.list:
+                                #verify if i is equal to symbol
+                                if self.leaf_node[i].value == symbol:
+                                    u = u.union(self.follow[i])
+                            #if u is not empty
+                            if len(u)>0:
+
+                                for statei in d_states:
+                                    flag = False
+                                    if statei.list == u:
+                                        #add transition to state
+                                        if state in d_tran:
+                                            d_tran[state][symbol] = [statei]
+                                        else:
+                                            d_tran[state] = {symbol:[statei]}
+                                        break
+                                    else:
+                                        flag = True
+                                if flag:
+                                    #create a new state
+                                    new_state = State()
+                                    new_state.list = u
+                                    d_states.append(new_state)
+                                    #make dictionary
+                                    if state in d_tran:
+                                        d_tran[state][symbol] = [new_state]
+                                    else:
+                                        d_tran[state] = {symbol:[new_state]}
+
+
+                                    '''#if u is not in d_states
+                                    if u not in [state.list for statei in d_states]:
+                                        #create a new state
+                                        new_state = State()
+                                        new_state.list = u
+                                        d_states.append(new_state)
+                                        #make dictionary
+                                        if state in d_tran:
+                                            d_tran[state][symbol] = [new_state]
+                                        else:
+                                            d_tran[state] = {symbol:[new_state]}
+                                    #if u is in d_states
+                                    else:
+                                        #add transition to state
+                                        if state in d_tran:
+                                            d_tran[state][symbol] = statei
+                                        else:
+                                            d_tran[state] = {symbol:i}'''
+
+        print('DTRAN DFA',d_tran)
+        print('DSTATES DFA',d_states)
+
+        #get final states
+        final_states = []
+        #evaluate if there is # symbol
+        for state in d_states:
+            for i in state.list:
+                if self.leaf_node[i].value == Symbol('#').name:
+                    state.is_final = True
+                    final_states.append(state)
+
+
+        #create dfa
+        dfa = DFA_automata(d_states,alfabeto,[d_tran],d_states[0],final_states)
+        return dfa
+
+
+
+
 
 
 
