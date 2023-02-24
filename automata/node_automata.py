@@ -6,12 +6,17 @@ from operators import *
 from Symbol import Symbol
 
 class Node():
+    leaf_node = []
+    counter_leaf = 0
     def __init__(self, value):
         self.value = value
         self.left = None
         self.right = None
         self.automata = []
         self.symbols = AlphabetDefinition().getSymbolDictionary()
+        self.label_leaf = None
+        self.null_node = None
+
 
     def make_alphabetic_automata(self,node):
         #make automata for an alphabet symbol
@@ -120,8 +125,82 @@ class Node():
             postorder = self.left.make_postorder()
         if self.right:
             postorder = postorder + self.right.make_postorder()
+
         postorder.append(self)
         return postorder
+
+    def label_leafs(self):
+        postorder = []
+
+        if self.left:
+            postorder = self.left.label_leafs()
+        if self.right:
+            postorder = postorder + self.right.label_leafs()
+
+        if self.left == None and self.right == None:
+            #evaluate if it is epsilon
+            if self.value == Symbol('ε').name:
+                 Node.leaf_node.append(self)
+            else:
+                self.label_leaf = Node.counter_leaf
+                Node.counter_leaf+=1
+                Node.leaf_node.append(self)
+
+        postorder.append(self)
+        return postorder
+
+
+    def make_rules(self,nodes_labeled):
+        #calculate nullable
+        for i in range(len(nodes_labeled)):
+            i = nodes_labeled[i]
+            i.null_node = self.nullable(i)
+            i.firstpos = self.firstpos(i)
+            i.lastpos = self.lastpos(i)
+            if i == KleeneStar().symbol:
+                pass
+
+    def lastpos(self,node):
+        if node.value == Symbol('ε').name:
+            return set()
+        if node.label_leaf != None:
+            return set([node.label_leaf])
+        if node.value == Union().symbol:
+            return self.lastpos(node.left).union(self.lastpos(node.right))
+        if node.value == Concatenation().symbol:
+            if self.nullable(node.right):
+                return self.lastpos(node.left).union(self.lastpos(node.right))
+            else:
+                return self.lastpos(node.right)
+        if node.value == KleeneStar().symbol:
+            return self.lastpos(node.left)
+
+    def firstpos(self,node):
+        if node.value == Symbol('ε').name:
+            return set()
+        if node.label_leaf != None:
+            return set([node.label_leaf])
+        if node.value == Union().symbol:
+            return self.firstpos(node.left).union(self.firstpos(node.right))
+        if node.value == Concatenation().symbol:
+            if self.nullable(node.left):
+                return self.firstpos(node.left).union(self.firstpos(node.right))
+            else:
+                return self.firstpos(node.left)
+        if node.value == KleeneStar().symbol:
+            return self.firstpos(node.left)
+
+    def nullable(self, node):
+        if node.value == Symbol('ε').name:
+            return True
+        if node.label_leaf != None:
+            return False
+        if node.value == Union().symbol:
+            return self.nullable(node.left) or self.nullable(node.right)
+        if node.value == Concatenation().symbol:
+            return self.nullable(node.left) and self.nullable(node.right)
+        if node.value == KleeneStar().symbol:
+            return True
 
     #Read each node
     def make_automata(self,nodes_postorder):

@@ -4,8 +4,13 @@ from automata.node_automata import Node
 from cleaning_expr import Clear
 from Symbol import Symbol
 class PostfixConverter:
-    def __init__(self, expression):
-        self.expression = expression
+    def __init__(self, expression, augmented_value=None):
+
+        if augmented_value is None:
+             self.expression = expression
+        else:
+            self.expression = '('+expression+')' + augmented_value
+
         self.alphabet = AlphabetDefinition()
         self.symbols = self.alphabet.getSymbolDictionary()
         self.stack_operators = []
