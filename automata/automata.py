@@ -10,7 +10,7 @@ class Automata():
     #visualize the automata with graphviz
     def visualize(self):
         graph_dot = Digraph('automata1',format='pdf')
-        graph_dot.attr(rankdir='LR')
+        graph_dot.attr(rankdir='LR') #Voltear la imagen
         for state in self.states:
             if state.is_initial:
                 graph_dot.node(state.name, state.name, shape='circle')
@@ -18,11 +18,8 @@ class Automata():
                 graph_dot.node(state.name, state.name, shape='doublecircle')
 
         for transition in self.transitions:
-            #print(self.transitions[transition])
             for symbol in self.transitions[transition]:
-                #print(self.transitions[transition][symbol])
                 for transition_final in self.transitions[transition][symbol]:
-                    #print(transition_final)
                     graph_dot.edge(transition.__str__(),transition_final.__str__(),label=str(symbol))
 
         graph_dot.render(directory='test-output', view=True)

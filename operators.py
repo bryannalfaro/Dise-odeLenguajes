@@ -1,6 +1,4 @@
 #Make abstract class operators
-
-
 class Operator():
     def __init__(self, symbol, precedence, associativity):
         self.symbol = symbol

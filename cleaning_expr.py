@@ -13,40 +13,39 @@ class Clear():
         positions_closing = []
 
         for i in range(len(self.expression)):
-            if self.expression[i] in opening_parenthesis:
-                counter_parenthesis += 1
-                positions_opening.append(i)
-            elif self.expression[i] in closing_parenthesis:
-                counter_parenthesis -= 1
-                if positions_opening != []:
-                    positions_opening.pop()
+            if self.expression[i] in opening_parenthesis: #si es un parentesis izquierdo
+                counter_parenthesis += 1 #aumenta el contador
+                positions_opening.append(i) #guarda la posicion del parentesis
+            elif self.expression[i] in closing_parenthesis: #si es un parentesis derecho
+                counter_parenthesis -= 1 #disminuye el contador
+                if positions_opening != []: #si hay parentesis izquierdos
+                    positions_opening.pop() #elimina el ultimo parentesis izquierdo
                 else:
                     positions_closing.append(i) #hay mas derechos que izquierdos
-        if counter_parenthesis != 0:
-
+        if counter_parenthesis != 0: #Esta desbalanceado
             if positions_opening != []:
-
                 return False, "Error: Missing closing parenthesis of parenthesis in position " + ','.join(map(str, positions_opening))
             elif positions_closing != []:
                 return False, "Error: Missing opening parenthesis of parenthesis in position " + ','.join(map(str, positions_closing))
         else:
             return True, ""
 
-        #validate if inside parentheses there is a symbol
+    #Validar que dentro de los parentesis no este vacio
     def validate_expression_inside_parenthesis(self,alphabet):
         flag_parenthesis = True
-        if alphabet == []:
+        if alphabet == []: #No vino nada
              flag_parenthesis = False
         else:
             inside = []
             new_expression = list(self.expression)
 
+            #Se recorre la expresion
             while len(new_expression) > 0 :
 
                 value = new_expression[-1]
 
-                if value == RightParenthesis().symbol:
-                    counter_R = 0 #Count if there are more than one parenthesis
+                if value == RightParenthesis().symbol: #Si es un parentesis derecho evalua
+                    counter_R = 0 #Si hay mas de un parentesis
                     counter_L = 0
                     new_expression.pop()
 
@@ -114,7 +113,6 @@ class Clear():
         return flag_operator,error
 
 
-
     #Realiza la transformacion dependiendo del symbol
     def clean_special_operators(self,symbol, new_expression):
         #pop the symbol
@@ -146,23 +144,24 @@ class Clear():
                 while len(new_expression) > 0:
                     value = new_expression[-1]
                     if value != LeftParenthesis().symbol and value != RightParenthesis().symbol:
-                        inside.append(new_expression.pop())
+                        inside.append(new_expression.pop()) #agregar el valor
                     elif value == LeftParenthesis().symbol and counter_R == counter_L:
-                        new_expression.pop()
+                        new_expression.pop() #se termina dentro de los parentesis
                         break
                     elif value == LeftParenthesis().symbol and counter_R != counter_L:
-                        counter_L += 1
-                        inside.append(new_expression.pop())
+                        counter_L += 1 #hay mas parentesis izquierdos
+                        inside.append(new_expression.pop()) #agregar el valor
                     else:
-                        counter_R += 1
+                        counter_R += 1 #hay mas parentesis derechos
                         inside.append(new_expression.pop())
+                #esta entre parentesis
                 inside = list((symbol.get_representation(''.join(reversed(inside)))))
                 new_expression = new_expression + inside
                 break
             else:
                 pass
         if a != []:
-            #make conversion
+            #make conversion, no esta entre parentesis
             conversion = list((symbol.get_representation(''.join(reversed(a)))))
             new_expression = new_expression + conversion
 
@@ -198,7 +197,7 @@ class Clear():
                 if self.expression[i] == KleeneStar().symbol or self.expression[i] == RightParenthesis().symbol or self.expression[i] == Epsilon().symbol :
                     if self.expression[i+1] != RightParenthesis().symbol and self.expression[i+1] not in self.symbols:
 
-                        new_expression.append(Concatenation().symbol)
+                        new_expression.append(Concatenation().symbol) #add concatenation operator
                     elif self.expression[i+1] == LeftParenthesis().symbol:
 
                         new_expression.append(Concatenation().symbol)
