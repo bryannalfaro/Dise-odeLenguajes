@@ -11,8 +11,13 @@ class DFA_automata(Automata):
 
 
     def move(self, state, symbol):
-
-        return self.transitions[state][symbol][0]
+        if state in self.transitions:
+            if symbol in self.transitions[state]:
+                 return self.transitions[state][symbol][0]
+            else:
+                return None
+        else:
+            return None
     def simulate_dfa(self,word):
         s0 = self.initial
 
