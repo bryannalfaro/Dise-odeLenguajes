@@ -8,3 +8,18 @@ class DFA_automata(Automata):
         self.transitions = transitions[0]
         self.initial = initial
         self.finals = finals
+
+
+    def move(self, state, symbol):
+
+        return self.transitions[state][symbol][0]
+    def simulate_dfa(self,word):
+        s0 = self.initial
+
+        for symbol in word:
+            s0 = self.move(s0, symbol)
+
+        if s0 in self.finals:
+            return True
+        else:
+            return False

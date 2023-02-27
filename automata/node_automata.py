@@ -254,7 +254,7 @@ class Node():
 
                     #for each symbol
                     for symbol in alfabeto:
-                        print(alfabeto)
+                        #print(alfabeto)
                         if symbol != Symbol('#').name:
 
                             #get the set of states that can be reached from state with symbol

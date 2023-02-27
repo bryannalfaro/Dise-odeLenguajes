@@ -59,7 +59,21 @@ print('Estado inicial: ',dfa.initial)
 print('Estado final: ',dfa.finals)
 print('Alfabeto: ',dfa.alphabet)
 dfa.visualize()
-a = input() #solo para la siguiente
+
+print('----------------------------------------')
+print('SIMULACION DFA')
+flag_sim = True
+while flag_sim:
+    dfa_word = input("Enter a word: ")
+    print('SIMULATION DFA SAYS: ',dfa.simulate_dfa(dfa_word))
+
+    answer= input("Do you want to simulate another word? (y/f): ")
+    if answer == 'f':
+        flag_sim = False
+print('----------------------------------------')
+
+
+a = input("Enter to continue...") #solo para la siguiente
 print('----------------------------------------')
 
 print('DFA DIRECT')
