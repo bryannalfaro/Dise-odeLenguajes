@@ -38,9 +38,9 @@ print('Transiciones: ',afn.transitions)
 print('Estado inicial: ',afn.initial)
 print('Estado final: ',afn.finals)
 print('Alfabeto: ',afn.alphabet)
-afn.visualize()
+#afn.visualize()
 
-print('----------------------------------------')
+'''print('----------------------------------------')
 print('SIMULACION AFN')
 flag_sim = True
 while flag_sim:
@@ -50,7 +50,7 @@ while flag_sim:
     answer= input("Do you want to simulate another word? (y/f): ")
     if answer == 'f':
         flag_sim = False
-print('----------------------------------------')
+print('----------------------------------------')'''
 print('AFN TO DFA WITH SUBSETS')
 dfa = afn.make_dfa()
 print('Estados :',dfa.states)
@@ -60,8 +60,9 @@ print('Estado final: ',dfa.finals)
 print('Alfabeto: ',dfa.alphabet)
 dfa.visualize()
 
-print('----------------------------------------')
-print('SIMULACION DFA')
+
+
+'''print('SIMULACION DFA')
 flag_sim = True
 while flag_sim:
     dfa_word = input("Enter a word: ")
@@ -99,7 +100,7 @@ print('Transiciones: ',dfa.transitions)
 print('Estado inicial: ',dfa.initial)
 print('Estado final: ',dfa.finals)
 print('Alfabeto: ',dfa.alphabet)
-dfa.visualize()
+#dfa.visualize()'''
 
 #print state.list
 '''for state in dfa.states:
@@ -112,3 +113,9 @@ dfa.visualize()
     print(node.value,node.null_node,node.firstpos,node.lastpos,node.follow)
 '''
 
+print('----------------------------------------')
+#minimal DFA
+print('MINIMAL DFA')
+dfa.minimize()
+
+print('----------------------------------------')
