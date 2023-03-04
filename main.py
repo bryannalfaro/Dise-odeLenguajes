@@ -1,6 +1,5 @@
 #TODO
 #bug con epsilon , preguntar cambio en visualize y node_automata
-#comprobar minimizacion con 2 dfas
 #Como elegir el inicial de minimizacion%
 #eliminar estados muertos?
 from expr_postfix import PostfixConverter
