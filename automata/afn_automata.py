@@ -44,6 +44,7 @@ class AFN_automata(Automata):
         state.is_initial = True
         d_tran = dict()
         state.list = self.epsilon_closure(self.initial)
+        print('STATE',state.list)
         d_states.append(state)
 
         #while there is unmarked states in d_states
@@ -58,6 +59,7 @@ class AFN_automata(Automata):
                             pass
                         else:
                             U = self.epsilon_closure(self.move_dfa(state, symbol))
+                            print('U VALUE',U,symbol,state)
 
                             for i in d_states:
                                 flag = False
@@ -83,6 +85,7 @@ class AFN_automata(Automata):
                                         d_tran[state] = {symbol:[new_state]}
 
         final_states = []
+        print('D_STATES',d_states)
         #if a state in state.list has a final state of NFA
         for state in d_states:
             for state_final in state.list:
@@ -90,6 +93,7 @@ class AFN_automata(Automata):
                     state.is_final = True
                     final_states.append(state)
 
+        print('FINALL',final_states)
         dfa = DFA_automata(d_states, self.alphabet, [d_tran], d_states[0], final_states)
         return dfa
 
