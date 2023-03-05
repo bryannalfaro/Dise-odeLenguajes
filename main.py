@@ -83,7 +83,7 @@ minimized_dfa.visualize()
 print('----------------------------------------')
 input()
 
-'''print('SIMULACION DFA')
+print('SIMULACION DFA')
 flag_sim = True
 while flag_sim:
     dfa_word = input("Enter a word: ")
@@ -96,7 +96,22 @@ print('----------------------------------------')
 
 
 a = input("Enter to continue...") #solo para la siguiente
-print('----------------------------------------')'''
+print('----------------------------------------')
+
+print('SIMULACION DFA MINIMO')
+flag_sim = True
+while flag_sim:
+    dfa_word = input("Enter a word: ")
+    print('SIMULATION MIN DFA SAYS: ',minimized_dfa.simulate_dfa(dfa_word))
+
+    answer= input("Do you want to simulate another word? (y/f): ")
+    if answer == 'f':
+        flag_sim = False
+print('----------------------------------------')
+
+
+a = input("Enter to continue...") #solo para la siguiente
+print('----------------------------------------')
 
 print('DFA DIRECT')
 
@@ -123,6 +138,23 @@ print('Estado final: ',dfa_direct.finals)
 print('Alfabeto: ',dfa_direct.alphabet)
 #dfa_direct.visualize()
 
+print('----------------------------------------')
+
+print('SIMULACION DFA DIRECTO')
+flag_sim = True
+while flag_sim:
+    dfa_word = input("Enter a word: ")
+    print('SIMULATION DIRECT DFA SAYS: ',dfa_direct.simulate_dfa(dfa_word))
+
+    answer= input("Do you want to simulate another word? (y/f): ")
+    if answer == 'f':
+        flag_sim = False
+print('----------------------------------------')
+
+
+a = input("Enter to continue...") #solo para la siguiente
+print('----------------------------------------')
+
 #print state.list
 '''for state in dfa_direct.states:
     print(state,state.list)'''
@@ -148,4 +180,21 @@ print('Alfabeto: ',minimized_direct.alphabet)
 
 #print(a==b)
 minimized_direct.visualize()
+print('----------------------------------------')
+
+print('----------------------------------------')
+
+print('SIMULACION DFA MINIMO DIRECTO')
+flag_sim = True
+while flag_sim:
+    dfa_word = input("Enter a word: ")
+    print('SIMULATION MIN DFA  DIRECT SAYS: ',minimized_direct.simulate_dfa(dfa_word))
+
+    answer= input("Do you want to simulate another word? (y/f): ")
+    if answer == 'f':
+        flag_sim = False
+print('----------------------------------------')
+
+
+a = input("Enter to continue...") #solo para la siguiente
 print('----------------------------------------')

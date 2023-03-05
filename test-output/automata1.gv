@@ -1,17 +1,6 @@
 digraph automata1 {
 	rankdir=LR
-	56 [label=56 shape=circle]
-	57 [label=57 shape=doublecircle]
-	58 [label=58 shape=doublecircle]
-	56 -> 62 [label=a]
-	56 -> 63 [label=b]
-	57 -> 57 [label=b]
-	59 -> 58 [label=b]
-	59 -> 59 [label=c]
-	60 -> 57 [label=b]
-	61 -> 58 [label=a]
-	62 -> 60 [label=a]
-	62 -> 57 [label=b]
-	62 -> 59 [label=c]
-	63 -> 61 [label=a]
+	8 [label=8 shape=circle]
+	9 [label=9 shape=doublecircle]
+	8 -> 9 [label=c]
 }
