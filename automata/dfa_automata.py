@@ -1,6 +1,8 @@
 from automata.automata import Automata
 from Symbol import Symbol
 import copy
+from state_definition import State
+
 class DFA_automata(Automata):
     def __init__(self, states, alphabet, transitions, initial, finals):
         super().__init__(states, alphabet, transitions, initial, finals)
@@ -119,13 +121,14 @@ class DFA_automata(Automata):
         #Divide the states into two groups, final and non-final
         final_states = self.finals
         non_final_states = list(set(self.states) - set(final_states))
-        print("Final states: ", final_states)
-        print("Non-final states: ", non_final_states)
+        new_states = []
+        #print("Final states: ", final_states)
+        #print("Non-final states: ", non_final_states)
 
         #Iterate the partition
         partition = [non_final_states, final_states]
         new_partition = []
-        print("Initial partition: ", partition)
+        #print("Initial partition: ", partition)
         new_partition = copy.copy(partition)
         while True:
                 new_partition2 = self.make_pi_new(new_partition)
@@ -135,4 +138,84 @@ class DFA_automata(Automata):
                 else:
                     new_partition = new_partition2
                     partition = new_partition2
-        return new_partition2
+
+        print(new_partition2)
+        #build the new DFA
+        for i in range(0, len(new_partition2)):
+            #print('I',self.initial)
+            if self.initial in new_partition2[i]:
+                #Create a state
+                initial = State(True,False)
+                initial.list = new_partition2[i]
+                new_states.append(initial)
+
+        #check finals
+        for i in range(0, len(new_partition2)):
+            for j in range(0, len(self.finals)):
+                #print('WORKINGGG',self.finals[j],'INITIAL',self.initial,new_partition2[i])
+                if self.finals[j] in new_partition2[i] and self.initial == self.finals[j]:
+                     #put the initial state as final
+                    new_states[0].is_final = True
+                    #print('NEW111',new_states[0].is_final,new_states[0].is_initial)
+                    break
+                elif self.finals[j] in new_partition2[i]:
+                    #print('YESSSS')
+                   #Create final state
+                    final = State(False,True)
+                    final.list = new_partition2[i]
+                    new_states.append(final)
+                    break
+                else:
+                    pass
+
+
+
+        #print('NEW',new_states)
+        n = copy.copy(new_states)
+
+        for i in range(0, len(new_partition2)):
+            #check the list of new states if they are already
+            for j in range(0, len(new_states)):
+                #print('NJ',new_partition2[i],new_states[j].list)
+                if new_partition2[i] == new_states[j].list:
+                    #print('here')
+                    break
+
+                elif j == len(new_states)-1:
+                    #print('here2')
+                    new_state = State(False,False)
+                    new_state.list = new_partition2[i]
+                    new_states.append(new_state)
+                    break
+
+        #print('new_states',new_states)
+        #check the finals in new_states
+        new_finals = []
+        for i in range(0, len(new_states)):
+            if new_states[i].is_final:
+                new_finals.append(new_states[i])
+
+        #print('new_finals',new_finals)
+
+
+        #make transitions
+        new_transitions = dict()
+        for i in range(0, len(new_states)):
+            for symbol in self.alphabet:
+                if symbol!=Symbol('#').name and symbol!=Symbol('ε').name:
+                    #print('ENTREEE',Symbol('ε').name,symbol)
+                    move = self.move((new_states[i].list)[0],symbol)
+                    #print('MOVE',move)
+                    if move!=None:
+                        for j in range(0, len(new_states)):
+                            if move in new_states[j].list:
+                                if new_states[i] in new_transitions:
+                                    new_transitions[new_states[i]].update({symbol:[new_states[j]]})
+                                else:
+                                    new_transitions[new_states[i]] = {symbol:[new_states[j]]}
+                                break
+
+        #print('new_transitions',new_transitions)
+        #make the new DFA
+        new_dfa = DFA_automata(new_states, self.alphabet, [new_transitions], new_states[0], new_finals)
+        return new_dfa

@@ -1,7 +1,9 @@
 #TODO
 #bug con epsilon , preguntar cambio en visualize y node_automata
-#Como elegir el inicial de minimizacion%
+#Como elegir el inicial de minimizacion? puedo agruparlos?
 #eliminar estados muertos?
+#simular minimizados?
+#inicial puede ser final? (a|b)*
 from expr_postfix import PostfixConverter
 from state_definition import State
 
@@ -67,8 +69,17 @@ print('Alfabeto: ',dfa.alphabet)
 print('----------------------------------------')
 print('MINIMIZACION DFA SUBSETS')
 minimized_dfa = dfa.minimize()
-print('Estados minimizados :',minimized_dfa)
-a = len(minimized_dfa)
+
+print('Estados: ',minimized_dfa.states)
+print('Transiciones: ',minimized_dfa.transitions)
+print("Estado inicial: ",minimized_dfa.initial)
+print('Estado final: ',minimized_dfa.finals)
+print('Alfabeto: ',minimized_dfa.alphabet)
+
+minimized_dfa.visualize()
+
+#print('Estados minimizados :',minimized_dfa)
+#a = len(minimized_dfa)
 print('----------------------------------------')
 input()
 
@@ -127,9 +138,14 @@ print('----------------------------------------')
 #minimal DFA
 print('MINIMAL DFA')
 minimized_direct = dfa_direct.minimize()
-print('Estados minimizados :',minimized_direct)
-b = len(minimized_direct)
+print('Estados: ',minimized_direct.states)
+print('Transiciones: ',minimized_direct.transitions)
+print("Estado inicial: ",minimized_direct.initial)
+print('Estado final: ',minimized_direct.finals)
+print('Alfabeto: ',minimized_direct.alphabet)
+#print('Estados minimizados :',minimized_direct)
+#b = len(minimized_direct)
 
-print(a==b)
-
+#print(a==b)
+minimized_direct.visualize()
 print('----------------------------------------')
