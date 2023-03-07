@@ -4,6 +4,7 @@
 #eliminar estados muertos?
 #simular minimizados?
 #inicial puede ser final? (a|b)*
+#corregir prelab
 from expr_postfix import PostfixConverter
 from state_definition import State
 

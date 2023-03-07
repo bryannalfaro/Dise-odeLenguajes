@@ -43,7 +43,8 @@ class AFN_automata(Automata):
         state = State()
         state.is_initial = True
         d_tran = dict()
-        state.list = self.epsilon_closure(self.initial)
+        #Se maneja como una lista dentro de un estado los epsilon closure
+        state.list = self.epsilon_closure(self.initial) #Closure del estado inicial
         d_states.append(state)
 
         #while there is unmarked states in d_states
@@ -57,11 +58,11 @@ class AFN_automata(Automata):
                         if symbol == Symbol('ε').name: #CAMBIAR A  ASCII
                             pass
                         else:
-                            U = self.epsilon_closure(self.move_dfa(state, symbol))
+                            U = self.epsilon_closure(self.move_dfa(state, symbol)) #devuelve lista de estados con epsilon
 
                             for i in d_states:
                                 flag = False
-                                if U == i.list:
+                                if U == i.list: #esto es para comprobar si ya esta en d_states
                                     #make dictionary
                                     if state in d_tran:
                                         d_tran[state][symbol] = [i]
