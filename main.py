@@ -1,8 +1,7 @@
 #TODO
 #bug con epsilon , preguntar cambio en visualize y node_automata
 #Como elegir el inicial de minimizacion? puedo agruparlos?
-#eliminar estados muertos?
-#simular minimizados?
+#eliminar estados muertos
 #inicial puede ser final? (a|b)*
 #corregir prelab
 from expr_postfix import PostfixConverter
@@ -70,7 +69,7 @@ dfa.visualize()
 input()
 print('----------------------------------------')
 print('MINIMIZACION DFA SUBSETS')
-minimized_dfa = dfa.minimize()
+minimized_dfa = dfa.minimize(dfa.states)
 
 print('Estados: ',minimized_dfa.states)
 print('Transiciones: ',minimized_dfa.transitions)
@@ -171,7 +170,7 @@ print('----------------------------------------')
 print('----------------------------------------')
 #minimal DFA
 print('MINIMAL DFA')
-minimized_direct = dfa_direct.minimize()
+minimized_direct = dfa_direct.minimize(dfa_direct.states)
 print('Estados: ',minimized_direct.states)
 print('Transiciones: ',minimized_direct.transitions)
 print("Estado inicial: ",minimized_direct.initial)

@@ -104,10 +104,14 @@ class DFA_automata(Automata):
         return new_arr
 
     #Minimization of DFA
-    def minimize(self):
+    def minimize(self,states):
         #Divide the states into two groups, final and non-final
+        delete_states = self.delete_death_state(states)
+        not_reachable = self.delete_not_reachable_state(states)
+        states_f = set(self.states) - set(delete_states) - not_reachable
         final_states = self.finals
-        non_final_states = list(set(self.states) - set(final_states))
+
+        non_final_states = list(states_f - set(final_states))
         new_states = []
 
         #Iterate the partition
@@ -196,3 +200,43 @@ class DFA_automata(Automata):
         #make the new DFA
         new_dfa = DFA_automata(new_states, self.alphabet, [new_transitions], new_states[0], new_finals)
         return new_dfa
+
+
+    def delete_death_state(self,states):
+        #Delete the death state
+        real_states = []
+        #see if for each symbol the state moves  to itself and it is not final
+        for state in states:
+            if state not in self.finals:
+                for symbol in self.alphabet:
+
+                    if symbol!=Symbol('#').name or symbol!=Symbol('ε').name:
+                        counter = 1
+                        move_state = self.move(state,symbol)
+                        if move_state==None:
+                            break
+                        elif move_state == state:
+                            counter-=1
+                if counter==0:
+                    real_states.append(state)
+        print('REAL STATES: ',real_states)
+        return real_states
+
+    def delete_not_reachable_state(self,states):
+        not_rea = []
+        for i in range(0, len(states)):
+            #print('REACHABLE STATE')
+            if states[i].is_initial:
+                not_rea.append(states[i])
+                for j in range(0, len(states)):
+                    for k in range(0, len(self.alphabet)):
+                        if k!=Symbol('#').name or k!=Symbol('ε').name:
+                            move_state = self.move(states[j],self.alphabet[k])
+                            if move_state!=None:
+                                if move_state not in not_rea:
+                                    not_rea.append(move_state)
+                break
+        print('REACHABLE:f ',not_rea)
+        not_rea = set(states) - set(not_rea)
+        print('NOT REACHABLE: ',not_rea)
+        return not_rea
