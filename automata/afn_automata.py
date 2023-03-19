@@ -73,7 +73,7 @@ class AFN_automata(Automata):
                                     pass
                                 else:
                                     flag = True
-                            if flag == True:
+                            if flag == True: #si no esta se crea un nuevo estado
                                     new_state = State()
                                     new_state.list = U
                                     d_states.append(new_state)

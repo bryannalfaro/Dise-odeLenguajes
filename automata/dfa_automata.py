@@ -219,7 +219,7 @@ class DFA_automata(Automata):
                             counter-=1
                 if counter==0:
                     real_states.append(state)
-        print('REAL STATES: ',real_states)
+        #print('REAL STATES: ',real_states)
         return real_states
 
     def delete_not_reachable_state(self,states):
@@ -236,7 +236,7 @@ class DFA_automata(Automata):
                                 if move_state not in not_rea:
                                     not_rea.append(move_state)
                 break
-        print('REACHABLE:f ',not_rea)
+        #print('REACHABLE:f ',not_rea)
         not_rea = set(states) - set(not_rea)
-        print('NOT REACHABLE: ',not_rea)
+        #print('NOT REACHABLE: ',not_rea)
         return not_rea

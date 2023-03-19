@@ -1,9 +1,3 @@
-#TODO
-#bug con epsilon , preguntar cambio en visualize y node_automata
-#Como elegir el inicial de minimizacion? puedo agruparlos?
-#eliminar estados muertos
-#inicial puede ser final? (a|b)*
-#corregir prelab
 from expr_postfix import PostfixConverter
 from state_definition import State
 
@@ -45,9 +39,9 @@ print('Transiciones: ',afn.transitions)
 print('Estado inicial: ',afn.initial)
 print('Estado final: ',afn.finals)
 print('Alfabeto: ',afn.alphabet)
-#afn.visualize()
-input()
-'''print('----------------------------------------')
+afn.visualize()
+a = input()
+print('----------------------------------------')
 print('SIMULACION AFN')
 flag_sim = True
 while flag_sim:
@@ -57,7 +51,7 @@ while flag_sim:
     answer= input("Do you want to simulate another word? (y/f): ")
     if answer == 'f':
         flag_sim = False
-print('----------------------------------------')'''
+print('----------------------------------------')
 print('AFN TO DFA WITH SUBSETS')
 dfa = afn.make_dfa()
 print('Estados :',dfa.states)
@@ -66,7 +60,7 @@ print('Estado inicial: ',dfa.initial)
 print('Estado final: ',dfa.finals)
 print('Alfabeto: ',dfa.alphabet)
 dfa.visualize()
-input()
+a=input()
 print('----------------------------------------')
 print('MINIMIZACION DFA SUBSETS')
 minimized_dfa = dfa.minimize(dfa.states)
@@ -84,7 +78,7 @@ minimized_dfa.visualize()
 print('----------------------------------------')
 input()
 
-print('SIMULACION DFA')
+print('SIMULACION DFA SUBSETS')
 flag_sim = True
 while flag_sim:
     dfa_word = input("Enter a word: ")
@@ -117,7 +111,7 @@ print('----------------------------------------')
 print('DFA DIRECT')
 
 #direct dfa
-expression_postfix = PostfixConverter(expression,"#")
+expression_postfix = PostfixConverter(expression,"#") #Se aumenta la expresion
 
 postfix,validate= expression_postfix.convertToPostfix(validate)
 alfabeto = expression_postfix.build_Alphabet()
@@ -126,9 +120,9 @@ alfabeto = expression_postfix.build_Alphabet()
 #print('Postfix: ',postfix)
 node_root = expression_postfix.make_nodes(postfix)#nodo root
 #print(node_root.value)
-postorder_labeled= node_root.label_leafs()
+postorder_labeled= node_root.label_leafs() #se enumeran las hojas
 
-node_root.make_rules(postorder_labeled)
+node_root.make_rules(postorder_labeled) #se hacen las reglas
 
 #print(node_root.follow)
 dfa_direct = node_root.make_dfa_direct(alfabeto.getAlphabetNames())
@@ -169,7 +163,7 @@ print('----------------------------------------')
 
 print('----------------------------------------')
 #minimal DFA
-print('MINIMAL DFA')
+print('MINIMAL DFA DIRECT')
 minimized_direct = dfa_direct.minimize(dfa_direct.states)
 print('Estados: ',minimized_direct.states)
 print('Transiciones: ',minimized_direct.transitions)
