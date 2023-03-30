@@ -4,6 +4,7 @@ from automata.afn_automata import AFN_automata
 from automata.dfa_automata import DFA_automata
 from alphabet_definition import AlphabetDefinition
 from operators import *
+import uuid
 from Symbol import Symbol
 
 class Node():
@@ -11,6 +12,7 @@ class Node():
     counter_leaf = 0
     def __init__(self, value):
         self.value = value
+        self.id = uuid.uuid4().hex
         self.left = None
         self.right = None
         self.automata = []

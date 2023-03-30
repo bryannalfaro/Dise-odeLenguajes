@@ -1,11 +1,16 @@
 from expr_postfix import PostfixConverter
 from state_definition import State
-
+from automata.tree import Tree
+from reader import Reader
 #initialize alphabet
 validate =False
 State.counter = 0
 
-while validate == False:
+#read file
+reader = Reader('slr-1.yal')
+reader.read_file()
+
+'''while validate == False:
 
     expression = input("Enter an expression: ")
     if expression == "":
@@ -13,7 +18,7 @@ while validate == False:
     else:
         expression_postfix = PostfixConverter(expression)
         expression_postfix.build_Alphabet()
-        postfix,validate= expression_postfix.convertToPostfix(validate) #Get postfix
+        postfix,validate= expression_postfix.convertToPostfix(validate) #Get postfix'''
 
 
 '''#for every expression in pruebas.txt print the postfix expression
@@ -24,13 +29,21 @@ with open('pruebas.txt') as f:
         expression_postfix.build_Alphabet()
         expression_postfix.convertToPostfix()'''
 
-#POSTFIX Y AFN
+'''#POSTFIX Y AFN
 print('POSTFIX Y AFN')
 print('Postfix: ',postfix)
-node_root = expression_postfix.make_nodes(postfix)#nodo root
+node_root = expression_postfix.make_nodes(postfix)#nodo root'''
+
+#visualize tree
+tree = Tree(node_root)
+tree.dot.render('tree.gv', view=True)
+
+a = input("Enter to continue...") #solo para la siguiente
 
 
-nodes_postorder = node_root.make_postorder()
+'''nodes_postorder = node_root.make_postorder()
+for node in nodes_postorder:
+    print('NODE',node.value)
 afn = node_root.make_automata(nodes_postorder)
 
 
@@ -102,7 +115,7 @@ while flag_sim:
     answer= input("Do you want to simulate another word? (y/f): ")
     if answer == 'f':
         flag_sim = False
-print('----------------------------------------')
+print('----------------------------------------')'''
 
 
 a = input("Enter to continue...") #solo para la siguiente
