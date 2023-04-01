@@ -7,18 +7,23 @@ validate =False
 State.counter = 0
 
 #read file
-reader = Reader('slr-1.yal')
+reader = Reader('slr-2.yal')
 reader.read_file()
-
-'''while validate == False:
-
-    expression = input("Enter an expression: ")
-    if expression == "":
-        print("Error: empty expression")
+expression = reader.get_tokens_expression()
+'''for key in reader.definitions:
+    #evaluate if it is not the last one
+    if key != list(reader.definitions.keys())[-1]:
+        expression += reader.definitions[key] + '|'
     else:
+        expression += reader.definitions[key]'''
+
+print('EXPRESSION: ',expression)
+input()
+while validate == False:
+
         expression_postfix = PostfixConverter(expression)
         expression_postfix.build_Alphabet()
-        postfix,validate= expression_postfix.convertToPostfix(validate) #Get postfix'''
+        postfix,validate= expression_postfix.convertToPostfix(validate) #Get postfix
 
 
 '''#for every expression in pruebas.txt print the postfix expression
@@ -29,16 +34,16 @@ with open('pruebas.txt') as f:
         expression_postfix.build_Alphabet()
         expression_postfix.convertToPostfix()'''
 
-'''#POSTFIX Y AFN
+#POSTFIX Y AFN
 print('POSTFIX Y AFN')
 print('Postfix: ',postfix)
-node_root = expression_postfix.make_nodes(postfix)#nodo root'''
+node_root = expression_postfix.make_nodes(postfix)#nodo root
 
 #visualize tree
 tree = Tree(node_root)
 tree.dot.render('tree.gv', view=True)
 
-a = input("Enter to continue...") #solo para la siguiente
+#a = input("Enter to continue...") #solo para la siguiente
 
 
 '''nodes_postorder = node_root.make_postorder()

@@ -19,7 +19,7 @@ class AlphabetDefinition:
 
         #get symbol dictionary, ADD EPSILON OR NOT
     def getSymbolDictionary(self):
-        operators = [KleeneStar(), Concatenation(), Union(), LeftParenthesis(), RightParenthesis(), QuestionMark(), PositiveClosure()]
+        operators = [KleeneStar(),Union(), Concatenation(),LeftParenthesis(), RightParenthesis(), QuestionMark(), PositiveClosure()]
         symbolDictionary = {}
         for i in range(len(operators)):
             symbolDictionary[operators[i].symbol] = operators[i]

@@ -1,4 +1,5 @@
 from operators import *
+from Symbol import Symbol
 class Clear():
     def __init__(self, expression,symbols):
         self.expression = expression
@@ -186,29 +187,64 @@ class Clear():
     #add the concatenation operator after the kleene star
     def preprocess(self):
         new_expression = []
-
-        self.expression = self.make_changes_operators()
-        self.expression = ''.join(self.expression)
-
+        flag = False
+        temp_number = ''
+        #ITERATE THE EXPRESSION and find number count 2 more and create a symbol
         for i in range(len(self.expression)):
-            new_expression.append(self.expression[i])
+            if self.expression[i] not in self.symbols:
+                temp_number += self.expression[i]
+            elif self.expression[i] in self.symbols and temp_number != '':
+                new_expression.append(temp_number)
+                new_expression.append(self.expression[i])
+                temp_number = ''
+            else:
+                new_expression.append(self.expression[i])
 
-            if i < len(self.expression) -1:
+        print('NEWW',new_expression)
+        self.expression = new_expression
+        #self.expression = self.make_changes_operators() TODO
+        self.expression = ''.join(self.expression)
+        print('NEWW2',self.expression)
+        counter = 0
+        arr_new = []
+        while counter!= len(self.expression):
+            if self.expression[counter] not in self.symbols:
+                    pass
+            else:
 
-                if self.expression[i] == KleeneStar().symbol or self.expression[i] == RightParenthesis().symbol or self.expression[i] == Epsilon().symbol :
-                    if self.expression[i+1] != RightParenthesis().symbol and self.expression[i+1] not in self.symbols:
+                arr_new.append(self.expression[counter])
+            counter += 1
+
+
+
+        other = []
+        other = new_expression
+        new_expression = []
+
+
+
+
+
+        for i in range(len(other)):
+            print('FOR',other[i])
+            new_expression.append(other[i])
+
+            if i < len(other) -1:
+                #REVISAR CAMBIO
+                if other[i] == KleeneStar().symbol or other[i]==PositiveClosure().symbol or other[i]==QuestionMark().symbol or other[i] == RightParenthesis().symbol or other[i] == Epsilon().symbol :
+                    if other[i+1] != RightParenthesis().symbol and other[i+1] not in self.symbols:
 
                         new_expression.append(Concatenation().symbol)
-                    elif self.expression[i+1] == LeftParenthesis().symbol:
+                    elif other[i+1] == LeftParenthesis().symbol:
 
                         new_expression.append(Concatenation().symbol)
                 #add concatenation operator between two alphabet symbols
-                elif self.expression[i] not in self.symbols:
-                    if self.expression[i+1] not in self.symbols and self.expression[i+1] != RightParenthesis().symbol:
+                elif other[i] not in self.symbols:
+                    if other[i+1] not in self.symbols and other[i+1] != RightParenthesis().symbol:
 
                         new_expression.append(Concatenation().symbol)
                     #add concatenation between alphabet and left parenthesis
-                    elif self.expression[i+1] == LeftParenthesis().symbol:
+                    elif other[i+1] == LeftParenthesis().symbol:
 
                         new_expression.append(Concatenation().symbol)
 
