@@ -52,9 +52,9 @@ class PostfixConverter:
             print('ENTRY',i,self.stack_operators)
             #check if it is an alphabet symbol
             if i not in self.symbols:
-                print('IM HERE APPENDING STACK',i)
+                #print('IM HERE APPENDING STACK',i)
                 self.postfix_stack.append(i)
-                print('STACK',self.postfix_stack)
+                #print('STACK',self.postfix_stack)
             #Check if the character is an operator
             elif i in self.symbols:
                 print('OPERATOR',i)
