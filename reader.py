@@ -18,6 +18,7 @@ class Reader():
         self.processing_tokens = False
         self.regex = ''
         self.valid_scapes = ['n','t','r','v','f','a','b','e','\\','\'','"']
+        self.comment_inside = ''
 
     def read_file(self):
         #read line by line
@@ -63,61 +64,77 @@ class Reader():
                     break
                 else:
                     pass
-                    #print('ELSE',self.current_char)
-                #self.expand_dictionary()
-                #print('JAJA',self.definitions['ws'][1])
                 self.pos += 1
 
     def process_token(self, line):
         for self.current_char in line:
-            if self.current_char == '(' and self.get_next_char(line,self.pos) == '*':
-                self.comment()
-                self.comments.append(self.current_string)
-                self.current_string = ''
-                break
-            else:
-                temp_word = ''
-                if self.current_char != ' ':
-                    while self.current_char != None  and self.current_char != '\n':
-                        while self.current_char != "'" and self.current_char not in self.symbols.keys() and self.current_char != '[' and self.current_char != '"' and self.current_char != ' ' and self.current_char != '\n':
-                            if self.current_char not in self.symbols.keys():
-                                print('CONSUMING CHARS')
-
-                                temp_word += self.current_char
-                                self.current_char = self.get_next_char(self.actual_line,self.pos)
-                                self.pos += 1
-                                print('CURRENT ALL1',self.current_string,self.current_char in self.symbols.keys(),temp_word)
-                        print('SALI DEL WHILE')
-                        if temp_word in self.definitions.keys():
-                            print('DEFINING WORD',temp_word)
-                            self.current_string += self.definitions[temp_word]
-                            self.rule_stack[self.token_name].append(self.current_string)
-                            temp_word = ''
-                            self.current_string = ''
-                            self.current_char = self.get_next_char(self.actual_line,self.pos)
-                            self.pos += 1
-                        elif self.current_char == "'":
-                            print('EVALURATING SINGLE')
-                            self.evaluate_single()
-                            self.rule_stack[self.token_name].append(self.current_string)
-                            print('S',self.current_string,self.current_char,self.temp_array)
-                        elif self.current_char == '"':
-                            print('EVALURATING DOUBLE')
-                            self.evaluate_double()
-                            self.rule_stack[self.token_name].append(self.current_string)
-                            print('D',self.current_string,self.current_char,self.temp_array)
-                        else:
-                            self.current_char = self.get_next_char(self.actual_line,self.pos)
-                            self.pos += 1
-                    print('CURRENT STRING SALE',self.current_string)
-
-                    self.pos += 1
+            while self.current_char != '\n' and self.current_char !=None:
+                print('CURRENT CHAR EN TOKEN',self.current_char,'JA')
+                if self.current_char == ' ' and self.get_next_char(line,self.pos) == '(' and self.get_next_char(line,self.pos + 1) == '*':
+                    self.comment_inside = ''
+                    self.comment(False)
+                    self.comments.append(self.comment_inside)
+                    self.comment_inside = ''
+                elif self.current_char == '(' and self.get_next_char(line,self.pos) == '*':
+                    self.comment()
+                    self.comments.append(self.current_string)
                     self.current_string = ''
-                    break
-                else:
+                elif self.current_char == '[' and self.get_next_char(self.actual_line,self.pos) == "'":
+                    if self.current_string != '':
+                        self.process_list(False)
+                    else:
+                        self.process_list()
+                    self.temp_array = []
+
+                elif self.current_char == '[' and self.get_next_char(self.actual_line,self.pos) == '"':
+                    print("TEMP LIST ANTES DE DOUBLE",self.temp_array)
+                    if self.current_string != '':
+                        self.process_list(False)
+                    else:
+                        self.process_list()
+                    self.temp_array = []
+                elif self.current_char == "'":
+                    self.evaluate_single()
+                elif self.current_char == '"':
+                    self.evaluate_double()
+                elif self.current_char == ' ':
                     self.current_char = self.get_next_char(self.actual_line,self.pos)
                     self.pos += 1
+                elif self.current_char == '|' and self.get_next_char(self.actual_line,self.pos) == ' ':
+                    self.current_char = self.get_next_char(self.actual_line,self.pos)
+                    self.pos += 1
+                elif self.current_char in self.symbols.keys():
+                    self.current_string += self.current_char
+                    self.current_char = self.get_next_char(self.actual_line,self.pos)
+                    self.pos += 1
+                else:
+                    temp_word = ''
 
+                    while self.current_char != "'" and self.current_char not in self.symbols.keys() and self.current_char != '[' and self.current_char != '"' and self.current_char != ' ' and self.current_char != '\n':
+                        if self.current_char not in self.symbols.keys():
+                            print('CONSUMING CHARS')
+
+                            temp_word += self.current_char
+                            self.current_char = self.get_next_char(self.actual_line,self.pos)
+                            self.pos += 1
+                            print('CURRENT ALL1',self.current_string,self.current_char in self.symbols.keys(),temp_word)
+                    print('SALI DEL WHILE')
+                    if temp_word in self.definitions.keys():
+                        print('DEFINING WORD',temp_word)
+                        self.current_string += self.definitions[temp_word]
+                        self.rule_stack[self.token_name].append(self.current_string)
+                        temp_word = ''
+                        self.current_string = ''
+                        self.current_char = self.get_next_char(self.actual_line,self.pos)
+                        self.pos += 1
+
+                print('CURRENT STRING SALE',self.current_string)
+            if self.current_string != '':
+                print('ADDING STACK',self.current_string)
+                self.rule_stack[self.token_name].append(self.current_string)
+                self.current_string = ''
+
+            break
 
     def process_rule(self):
         print('RULE',self.current_char,self.pos)
@@ -141,7 +158,7 @@ class Reader():
 
     #Se maneja la definicion let
     def process_definition(self):
-        print('ENTRANDO A PROCESS DEFINITION',self.current_char,self.current_string)
+        print('ENTRANDO A PROCESS DEFINITION',self.current_char,self.current_string,self.pos)
         self.coincidir('l')
         self.coincidir('e')
         self.coincidir('t')
@@ -153,7 +170,6 @@ class Reader():
         self.coincidir(' ')
         self.coincidir('=')
         self.coincidir(' ')
-
         self.process_expression()
         self.definitions[key] = self.current_string
         #print('S3',self.current_char,self.pos,self.current_string)
@@ -169,9 +185,7 @@ class Reader():
 
         print('DEFINITIONS',self.definitions)
 
-        #print('TEMP ARRAY',self.definitions['delim'])
         self.current_string = ''
-
 
     def expand_dictionary(self):
         #iterate dictionary and find the keys that are in the values
@@ -197,53 +211,50 @@ class Reader():
 
     def process_expression(self):
         #caso en que es un []
-        if self.current_char == '[' and self.get_next_char(self.actual_line,self.pos) == "'":
-            self.process_list()
-            if self.current_char == ' ' and self.get_next_char(self.actual_line,self.pos) == '(' and self.get_next_char(self.actual_line,self.pos + 1) == '*':
-                self.current_string = ''
-                self.comment()
-                print('COMENTARIO ADENTRO DE EXPRESION',self.current_string)
-                self.comments.append(self.current_string)
-                self.current_string = ''
-            elif self.current_char != '':
-                print('NO FINALIZA EXPRESION')
-                self.process_expression()
-        elif self.current_char == '[' and self.get_next_char(self.actual_line,self.pos) == '"':
-            self.process_list()
-        elif self.current_char == "'":
-            self.evaluate_single()
-        else:
-            temp_word = ''
-            while self.current_char != None and self.current_char != ' ' and self.current_char != '\n':
+        while self.current_char != '\n':
+            print('CURRENT CHAR while',self.current_char,self.pos)
+            if self.current_char == '[' and self.get_next_char(self.actual_line,self.pos) == "'":
+                if self.current_string != '':
+                    self.process_list(False)
+                else:
+                    self.process_list()
+            elif self.current_char == ' ' and self.get_next_char(self.actual_line,self.pos) == '(' and self.get_next_char(self.actual_line,self.pos + 1) == '*':
+                self.comment_inside = ''
+                self.comment(init=False)
+                print('COMENTARIO ADENTRO DE EXPRESION',self.comment_inside)
+                self.comments.append(self.comment_inside)
+                self.comment_inside= ''
+                # elif self.current_char != '':
+                #     print('NO FINALIZA EXPRESION')
+                #     self.process_expression()
+            elif self.current_char == '[' and self.get_next_char(self.actual_line,self.pos) == '"':
+                if self.current_string != '':
+                    self.process_list(False)
+                else:
+                    self.process_list()
+            elif self.current_char == "'":
+                self.evaluate_single()
+            elif self.current_char == '"':
+                self.evaluate_double()
+            elif self.current_char in self.symbols.keys():
+                        print('ADDING THE SYMBOL TO THE STRING')
+                        #print('Adentro',self.current_char,self.temp_array,self.current_string)
+                        self.current_string += self.current_char
+                        self.current_char = self.get_next_char(self.actual_line,self.pos)
+                        self.pos += 1
+            else:
+                temp_word = ''
+
                 while self.current_char != "'" and self.current_char not in self.symbols.keys() and self.current_char != '[' and self.current_char != '"':
                     print('CONSUMING CHARS DETECTING VAR')
                     temp_word += self.current_char
                     self.current_char = self.get_next_char(self.actual_line,self.pos)
                     self.pos += 1
                     #print('CURRENT ALL1',self.current_string,self.current_char in self.symbols.keys())
+                print('TEMP WORD SALI WHILE',temp_word)
                 if temp_word in self.definitions.keys():
                     self.current_string += self.definitions[temp_word]
                     temp_word = ''
-                elif self.current_char == "'":
-                    print('EVALURATING SINGLE')
-                    self.evaluate_single()
-                    print('S',self.current_string,self.current_char,self.temp_array)
-                elif self.current_char == '"':
-                    print('EVALUATING DOUBLE')
-                    self.evaluate_double()
-                    print('S',self.current_string,self.current_char,self.temp_array)
-                elif self.current_char == '[':
-                    print('EVALUATING LIST')
-                    self.process_list(False)
-                    #print('S',self.current_string,self.current_char,self.temp_array)
-                elif self.current_char in self.symbols.keys():
-                    print('ADDING THE SYMBOL TO THE STRING')
-                    #print('Adentro',self.current_char,self.temp_array,self.current_string)
-                    self.current_string += self.current_char
-                    self.current_char = self.get_next_char(self.actual_line,self.pos)
-                    self.pos += 1
-                    #self.temp_array = []
-                print('CURRENT ALL',self.current_string,self.current_char,self.temp_array)
 
     def process_list(self,initial_exp = True):
         #self.current_string += self.current_char
@@ -417,22 +428,39 @@ class Reader():
         #self.current_string += text
         self.coincidir("'")
 
-    def comment(self):
-        self.current_string += self.current_char
-        print('YES',self.current_string)
-        self.coincidir('(')
-        self.current_string += self.current_char
-        print('YES',self.current_string)
-        self.coincidir('*')
-        while self.current_char != '*' and self.get_next_char(self.actual_line,self.pos) != ')':
+    def comment(self, init=True):
+        if init:
             self.current_string += self.current_char
+            print('YES',self.current_string)
+            self.coincidir('(')
+            self.current_string += self.current_char
+            print('YES',self.current_string)
+            self.coincidir('*')
+            while self.current_char != '*' and self.get_next_char(self.actual_line,self.pos) != ')':
+                self.current_string += self.current_char
+                self.current_char = self.get_next_char(self.actual_line,self.pos)
+                self.pos += 1
+
+            self.current_string += self.current_char
+            self.coincidir('*')
+            self.current_string += self.current_char
+            self.coincidir(')')
+        else:
             self.current_char = self.get_next_char(self.actual_line,self.pos)
             self.pos += 1
+            self.comment_inside += self.current_char
+            self.coincidir('(')
+            self.comment_inside += self.current_char
+            self.coincidir('*')
+            while self.current_char != '*' and self.get_next_char(self.actual_line,self.pos) != ')':
+                self.comment_inside += self.current_char
+                self.current_char = self.get_next_char(self.actual_line,self.pos)
+                self.pos += 1
 
-        self.current_string += self.current_char
-        self.coincidir('*')
-        self.current_string += self.current_char
-        self.coincidir(')')
+            self.comment_inside += self.current_char
+            self.coincidir('*')
+            self.comment_inside += self.current_char
+            self.coincidir(')')
 
     def coincidir(self,terminal):
         if self.current_char == terminal:
