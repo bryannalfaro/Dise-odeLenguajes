@@ -7,7 +7,7 @@ validate =False
 State.counter = 0
 
 #read file
-reader = Reader('slr-4.yal')
+reader = Reader('slrtest.yal')
 reader.read_file()
 expression = reader.get_tokens_expression()
 '''for key in reader.definitions:

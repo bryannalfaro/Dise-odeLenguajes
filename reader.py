@@ -1,4 +1,5 @@
 from alphabet_definition import *
+import string
 class Reader():
     def __init__(self, path):
         self.path = path
@@ -100,6 +101,8 @@ class Reader():
                 elif self.current_char == ' ':
                     self.current_char = self.get_next_char(self.actual_line,self.pos)
                     self.pos += 1
+                elif self.current_char == '-':
+                    self.get_all_ascii()
                 elif self.current_char == '|' and self.get_next_char(self.actual_line,self.pos) == ' ':
                     self.current_char = self.get_next_char(self.actual_line,self.pos)
                     self.pos += 1
@@ -242,6 +245,9 @@ class Reader():
                         self.current_string += self.current_char
                         self.current_char = self.get_next_char(self.actual_line,self.pos)
                         self.pos += 1
+            elif self.current_char == '-':
+                #return all ascii
+                self.get_all_ascii()
             else:
                 temp_word = ''
 
@@ -255,6 +261,28 @@ class Reader():
                 if temp_word in self.definitions.keys():
                     self.current_string += self.definitions[temp_word]
                     temp_word = ''
+
+
+    def get_all_ascii(self):
+        #get all the ascii characters
+        self.coincidir('-')
+        for char in string.printable:
+            if len(str(ord(char))) == 1:
+                self.temp_array.append('00' + str(ord(char)))
+            elif len(str(ord(char))) == 2:
+                self.temp_array.append('0' + str(ord(char)))
+            else:
+                self.temp_array.append(str(ord(char)))
+        print('TEMP ARRAY',self.temp_array)
+
+        temp_string = ''
+        temp_string += '('
+        #join all the elements in the array with | except the last one
+        temp_string += '|'.join(self.temp_array)
+        temp_string += ')'
+        self.current_string += temp_string
+        self.temp_array = []
+
 
     def process_list(self,initial_exp = True):
         #self.current_string += self.current_char
@@ -279,19 +307,18 @@ class Reader():
         temp_string = ''
 
         temp_string += '('
-        for element in self.temp_array:
-            element = str(element)
-            print(element, self.temp_array[-1])
-            if element != str(self.temp_array[-1]):
-                temp_string += element + '|'
-            else:
-                temp_string += element
+        #separate all elements in the array with | except the last one
+
+        temp_string += '|'.join(self.temp_array)
         temp_string += ')'
+
         print('TEMP PROCESS EXPRESSION STRING',temp_string)
         if initial_exp:
             self.current_string = temp_string.strip()
         else:
             self.current_string += temp_string.strip()
+
+        self.temp_array = []
 
     def evaluate_double(self,inside_list = False):
         #self.current_string += self.current_char
@@ -343,16 +370,11 @@ class Reader():
         else:
             temp_string = ''
             temp_string += '('
-            for element in self.temp_array:
-                element = str(element)
-                print(element, self.temp_array[-1])
-                if element != str(self.temp_array[-1]):
-                    temp_string += element + '|'
-                else:
-                    temp_string += element
+            #separate all elements in the array with | except the last one
+            temp_string += '|'.join(self.temp_array)
             temp_string += ')'
             print('TEMP PROCESS EXPRESSION STRING',temp_string)
-            self.current_string = temp_string.strip()
+            self.current_string += temp_string.strip()
 
 
         self.coincidir('"')
@@ -381,6 +403,8 @@ class Reader():
                 i = '00'+str(i)
             elif len(str(i))==2:
                 i = '0'+str(i)
+            else:
+                i = str(i)
             self.temp_array.append(i)
         print('TEMP ARRAY EXPAND',self.temp_array)
 
@@ -423,7 +447,7 @@ class Reader():
         if inside_list:
             self.temp_array.append(text)
         else:
-            self.current_string += text
+            self.current_string += '('+text+')'
 
         #self.current_string += text
         self.coincidir("'")

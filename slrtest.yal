@@ -2,17 +2,13 @@
 
 (* Introducir cualquier header aqui *)
 
-let delim = ['a''b']+
+let delim = [^'a'-'z']
 let ws = ['0'-'9']+
 let ad = "gh"
 let all = delim['h'] (* Comentando *)
 let bel = 'p'
 
 rule tokens =
-    ['a''h']
-  |  ['0'-'9']+
-  |  ["ab"]+               (* Cambie por una acción válida, que devuelva el token *)
-  |  'a'               (* Cambie por una acción válida, que devuelva el token *)
-  |  "ab"              (* Cambie por una acción válida, que devuelva el token *)
+    delim
 
 (* Introducir cualquier trailer aqui *)
