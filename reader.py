@@ -1,5 +1,6 @@
 from alphabet_definition import *
 import string
+from operators import *
 class Reader():
     def __init__(self, path):
         self.path = path
@@ -18,7 +19,7 @@ class Reader():
         self.token_name = ''
         self.processing_tokens = False
         self.regex = ''
-        self.valid_scapes = ['n','t','r','v','f','a','b','e','\\','\'','"']
+        self.valid_scapes = ['n','t','r','v','f','a','b','\\','\'','"']
         self.comment_inside = ''
         self.second_temp_array = []
 
@@ -257,9 +258,9 @@ class Reader():
                 self.evaluate_double()
             #Caso es un simbolo de regex
             elif self.current_char in self.symbols.keys():
-                        self.current_string += self.current_char
-                        self.current_char = self.get_next_char(self.actual_line,self.pos)
-                        self.pos += 1
+                self.current_string += self.current_char
+                self.current_char = self.get_next_char(self.actual_line,self.pos)
+                self.pos += 1
             #Caso es todo ascii
             elif self.current_char == '-':
                 #return all ascii
@@ -374,7 +375,19 @@ class Reader():
                         text = '\n'
                     elif self.current_char == 't':
                         text = '\t'
-                    print('TEXT here',text, ord(text))
+                    elif self.current_char == 'r':
+                        text = '\r'
+                    elif self.current_char == 'v':
+                        text = '\v'
+                    elif self.current_char == 'b':
+                        text = '\b'
+                    elif self.current_char == 'f':
+                        text = '\f'
+                    elif self.current_char == 'a':
+                        text = '\a'
+                    elif self.current_char == '\\':
+                        text = '\\'
+                    #print('TEXT here',text, ord(text))
                     if len(str(ord(text))) ==1:
                         text = '00'+str(ord(text))
                     elif len(str(ord(text))) == 2:
@@ -383,12 +396,38 @@ class Reader():
                         text = str(ord(text))
                 self.temp_array.append(text)
                 text = ''
-                self.current_string += self.current_char
+                #self.current_string += self.current_char
                 self.current_char = self.get_next_char(self.actual_line,self.pos)
                 self.pos += 1
+            elif self.current_char == '\\' and self.get_next_char(self.actual_line,self.pos) not in self.valid_scapes:
+                string_concat = ''
+                text = self.current_char
+                if len(str(ord(text))) ==1:
+                    text = '00'+str(ord(text))
+                elif len(str(ord(text))) == 2:
+                    text = '0'+str(ord(text))
+                else:
+                    text = str(ord(text))
+                string_concat += '('+text + ')'
+                text = ''
+                self.current_char = self.get_next_char(self.actual_line,self.pos)
+                self.pos += 1
+                text = self.current_char
+                if len(str(ord(text))) ==1:
+                    text = '00'+str(ord(text))
+                elif len(str(ord(text))) == 2:
+                    text = '0'+str(ord(text))
+                else:
+                    text = str(ord(text))
+                string_concat += '('+text+')'
+                self.temp_array.append(string_concat)
+                text = ''
+                self.current_char = self.get_next_char(self.actual_line,self.pos)
+                self.pos += 1
+
             else:
                 text += self.current_char
-                print('TEXT',text)
+                #print('TEXT',text)
                 if len(str(ord(text))) ==1:
                     text = '00'+str(ord(text))
                 elif len(str(ord(text))) == 2:
@@ -400,13 +439,13 @@ class Reader():
                 self.current_char = self.get_next_char(self.actual_line,self.pos)
                 self.pos += 1
         if inside_list:
-            self.current_string += text
+            self.current_string += text #vacio porque esta en temp array
+            #print("INSIDE LIST DOUBLE",self.current_string)
         else:
             temp_string = ''
-            temp_string += '('
-            #separate all elements in the array with | except the last one
-            temp_string += '|'.join(self.temp_array)
-            temp_string += ')'
+            #separate the each element with ()
+            for element in self.temp_array:
+                temp_string += '(' + element + ')'
             self.current_string += temp_string.strip()
         self.coincidir('"')
 
@@ -426,8 +465,8 @@ class Reader():
         last = self.temp_array.pop()
         #pop the first element
         first = self.temp_array.pop()
-        print('FIRST',chr(int(first)))
-        print('LAST',chr(int(last)))
+        #print('FIRST',chr(int(first)))
+        #print('LAST',chr(int(last)))
         for i in range(int(first),int(last) + 1):
             if len(str(i)) ==1:
                 i = '00'+str(i)
@@ -436,7 +475,7 @@ class Reader():
             else:
                 i = str(i)
             self.temp_array.append(i)
-        print('TEMP ARRAY EXPAND',self.temp_array)
+        #print('TEMP ARRAY EXPAND',self.temp_array)
 
     #Metodo para evaluar una expresion con comillas simples
     def evaluate_single(self,inside_list = False):
@@ -444,30 +483,42 @@ class Reader():
         #get one char
         text = ''
         while self.current_char != "'":
-            if self.current_char == '\\':
+            if self.current_char == '\\' and self.get_next_char(self.actual_line,self.pos) in self.valid_scapes:
                 self.current_char = self.get_next_char(self.actual_line,self.pos)
                 self.pos += 1
                 if self.current_char == 'n':
                     text = '\n'
                 elif self.current_char == 't':
                     text = '\t'
-                elif self.current_char == 's':
-                    text = '\s'
-                print('TEXT here',text)
+                elif self.current_char == 'r':
+                    text = '\r'
+                elif self.current_char == 'v':
+                    text = '\v'
+                elif self.current_char == 'b':
+                    text = '\b'
+                elif self.current_char == 'f':
+                    text = '\f'
+                elif self.current_char == 'a':
+                    text = '\a'
+                elif self.current_char == '\\':
+                    text = '\\'
+                #print('TEXT here',text)
                 self.current_string += self.current_char
                 self.current_char = self.get_next_char(self.actual_line,self.pos)
                 self.pos += 1
+            elif self.current_char == '\\' and self.get_next_char(self.actual_line,self.pos) not in self.valid_scapes:
+                pass
             else:
                 text += self.current_char
-                print('TEXT',text)
+                #print('TEXT',text)
 
                 self.current_char = self.get_next_char(self.actual_line,self.pos)
                 self.pos += 1
-        print('SALI DE EVALUAR SINGLE',text,ord(text))
+        #print('SALI DE EVALUAR SINGLE',text,ord(text))
         if len(str(ord(text))) ==1:
             text = '00'+str(ord(text))
         elif len(str(ord(text))) == 2:
-            print('SOY LEN 2')
+            #print('SOY LEN 2')
             text = '0'+str(ord(text))
         else:
             text = str(ord(text))
@@ -486,11 +537,14 @@ class Reader():
             self.coincidir('(')
             self.current_string += self.current_char
             self.coincidir('*')
-            while self.current_char != '*' and self.get_next_char(self.actual_line,self.pos) != ')':
+            while self.current_char != '*' or self.get_next_char(self.actual_line,self.pos) != ')':
+                #print('CURRENT',self.current_char,self.pos,self.get_next_char(self.actual_line,self.pos))
                 self.current_string += self.current_char
                 self.current_char = self.get_next_char(self.actual_line,self.pos)
                 self.pos += 1
+                #print('SELF CURRENT',self.current_char,self.get_next_char(self.actual_line,self.pos))
 
+            print('SALIR')
             self.current_string += self.current_char
             self.coincidir('*')
             self.current_string += self.current_char

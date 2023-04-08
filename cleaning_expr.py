@@ -167,6 +167,7 @@ class Clear():
             conversion = list((symbol.get_representation(''.join(reversed(a)))))
             new_expression = new_expression + conversion
 
+        print('CLEANING SPECIAL OPERATOR ENDING',new_expression)
         return new_expression
 
 
@@ -177,6 +178,7 @@ class Clear():
         for i in range(len(self.expression)):
             new_expression.append(self.expression[i])
             if self.expression[i] == QuestionMark().symbol:
+                print('ENTRE QUESTION')
                 new_expression = self.clean_special_operators(QuestionMark(), new_expression)
             elif self.expression[i] == PositiveClosure().symbol:
                 new_expression = self.clean_special_operators(PositiveClosure(), new_expression)
@@ -200,33 +202,35 @@ class Clear():
             else:
                 new_expression.append(self.expression[i])
 
-        print('NEWW',new_expression)
+        print('ARRAY OF EXPRESSION: ',new_expression)
         self.expression = new_expression
-        #self.expression = self.make_changes_operators() TODO
-        self.expression = ''.join(self.expression)
+        self.expression = self.make_changes_operators()
+
+        print('AFTER CLEANING OPERATORS: ',self.expression)
+        new_expression = self.expression
+        #self.expression = ''.join(self.expression)
         print('NEWW2',self.expression)
-        counter = 0
-        arr_new = []
-        while counter!= len(self.expression):
-            if self.expression[counter] not in self.symbols:
-                    pass
+        new_expression = []
+        temp_number = ''
+        #ITERATE THE EXPRESSION and find number count 2 more and create a symbol
+        for i in range(len(self.expression)):
+            if self.expression[i] not in self.symbols:
+                temp_number += self.expression[i]
+            elif self.expression[i] in self.symbols and temp_number != '':
+                new_expression.append(temp_number)
+                new_expression.append(self.expression[i])
+                temp_number = ''
             else:
+                new_expression.append(self.expression[i])
 
-                arr_new.append(self.expression[counter])
-            counter += 1
-
-
+        print('NEWW3',new_expression)
 
         other = []
         other = new_expression
         new_expression = []
 
-
-
-
-
         for i in range(len(other)):
-            print('FOR',other[i])
+            #print('FOR',other[i])
             new_expression.append(other[i])
 
             if i < len(other) -1:
@@ -245,7 +249,6 @@ class Clear():
                         new_expression.append(Concatenation().symbol)
                     #add concatenation between alphabet and left parenthesis
                     elif other[i+1] == LeftParenthesis().symbol:
-
                         new_expression.append(Concatenation().symbol)
 
         return new_expression

@@ -49,7 +49,7 @@ class PostfixConverter:
         #Iterate through the expression
         print(''.join(self.expression))
         for i in arr_preprocessed:
-            print('ENTRY',i,self.stack_operators)
+            #print('ENTRY',i,self.stack_operators)
             #check if it is an alphabet symbol
             if i not in self.symbols:
                 #print('IM HERE APPENDING STACK',i)
@@ -57,17 +57,17 @@ class PostfixConverter:
                 #print('STACK',self.postfix_stack)
             #Check if the character is an operator
             elif i in self.symbols:
-                print('OPERATOR',i)
+                #print('OPERATOR',i)
                 if len(self.stack_operators) == 0:
-                    print('STACK OPERATORS EMPTY',self.stack_operators)
+                    #print('STACK OPERATORS EMPTY',self.stack_operators)
                     self.stack_operators.append(i)
-                    print('STACK OPERATORS',self.stack_operators)
+                    #print('STACK OPERATORS',self.stack_operators)
                 #check if it is (
                 elif i == LeftParenthesis().symbol:
                     self.stack_operators.append(i)
                 #check if it is ) and empty the stack until (
                 elif i == RightParenthesis().symbol:
-                    print('RIGHT PARENTHESIS',self.stack_operators)
+                    #print('RIGHT PARENTHESIS',self.stack_operators)
                     while self.stack_operators[-1] != LeftParenthesis().symbol:
                         self.postfix_stack.append(self.stack_operators.pop())
                     self.stack_operators.pop()
@@ -77,7 +77,7 @@ class PostfixConverter:
                     while len(self.stack_operators) != 0 and self.symbols[i].precedence <= self.symbols[self.stack_operators[-1]].precedence:
                         self.postfix_stack.append(self.stack_operators.pop())
                     self.stack_operators.append(i)
-            print("SALIR DEL FOR")
+            #print("SALIR DEL FOR")
         #Empty the stack
         while len(self.stack_operators) != 0:
 

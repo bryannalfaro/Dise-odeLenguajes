@@ -2,9 +2,9 @@
 
 (* Introducir cualquier header aqui *)
 
-let delim = ["abcd"]#['a''b']
+let delim = "\\"
 
 rule tokens =
-    ["abcd"]#["ab"]
+    delim
 
 (* Introducir cualquier trailer aqui *)
