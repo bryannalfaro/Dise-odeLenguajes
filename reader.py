@@ -1,6 +1,7 @@
 from alphabet_definition import *
 import string
 from operators import *
+from token_object import TokenObject
 class Reader():
     def __init__(self, path):
         self.path = path
@@ -22,19 +23,27 @@ class Reader():
         self.valid_scapes = ['n','t','r','v','f','a','b','\\','\'','"']
         self.comment_inside = ''
         self.second_temp_array = []
+        self.file_string = ''
+        self.counter_increment = 0
+        self.actions = {}
+        self.tokens_file = []
+        self.actual_tok = None
 
     def read_file(self):
         #read line by line
         with open(self.path, 'r') as file:
             for line in file:
-                self.pos = 0
-                self.actual_line = line
-                print("Processing line: ")
-                print(line)
-                self.process_line(line)
+                #add to the file string
+                self.file_string += line
+            self.process_file()
+            print('MEGA STRING',self.file_string)
             print('COMMENTS',self.comments)
             print('TOKENS',self.rule_stack)
             print('DEFINITION',self.definitions)
+            print('ACTIONS',self.actions)
+            for i in self.tokens_file:
+                print(
+                'TOKE',(i.token,i.value,i.definition,i.id_leaf))
 
     '''
     Este metodo recorre el diccionario de tokens y arma el string
@@ -44,129 +53,40 @@ class Reader():
             for i in self.rule_stack[key]:
                 #if it is not the last element
                 if i != self.rule_stack[key][-1]:
-                    self.regex += '('+i+')' + '|'
+                    self.regex += '('+i+')' + '#'+'|'
                 else:
-                    self.regex += '('+i+')'
+                    self.regex += '('+i+')'+'#'
         print("FINAL REGEX: ",self.regex)
         return self.regex
 
     #Este metodo procesa cada linea y se verifica si es de tokens o no
-    def process_line(self, line):
-        if self.processing_tokens:
-            self.process_token(line)
-        else:
-            for self.current_char in line:
+    def process_file(self):
+        #Recorrer string
+        i = 0
+        print('LEN',len(self.file_string))
+        while i < len(self.file_string):
+            self.current_char = self.file_string[i]
+            if self.processing_tokens:
+                self.actual_tok = None
+                self.process_token()
+                i = self.pos
+            else:
                 #Caso en que se encuentre un comentario
-                if self.current_char == '(' and self.get_next_char(line,self.pos) == '*':
+                if self.current_char == '(' and self.get_next_char(self.file_string,self.pos) == '*':
                     self.comment()
                     self.comments.append(self.current_string)
                     self.current_string = ''
-                    break
                 #Caso en que se encuentre un let
-                elif self.current_char == 'l' and self.get_next_char(line,self.pos) == 'e' and self.get_next_char(line,self.pos + 1) == 't' and self.get_next_char(line,self.pos + 2) == ' ':
+                elif self.current_char == 'l' and self.get_next_char(self.file_string,self.pos) == 'e' and self.get_next_char(self.file_string,self.pos + 1) == 't' and self.get_next_char(self.file_string,self.pos + 2) == ' ':
                     self.process_definition()
-                    break
                 #Caso en que se encuentre un rule
-                elif self.current_char == 'r' and self.get_next_char(line,self.pos) == 'u' and self.get_next_char(line,self.pos+1) == 'l' and self.get_next_char(line,self.pos+2) == 'e':
+                elif self.current_char == 'r' and self.get_next_char(self.file_string,self.pos) == 'u' and self.get_next_char(self.file_string,self.pos+1) == 'l' and self.get_next_char(self.file_string,self.pos+2) == 'e':
                     self.process_rule()
                     self.processing_tokens = True
-                    break
                 else:
                     pass
                 self.pos += 1
-
-    '''
-    Este metodo procesa las lineas que se encuentran dentro de rule para obtener los tokens
-    '''
-    def process_token(self, line):
-        for self.current_char in line:
-            while self.current_char != '\n' and self.current_char !=None:
-                #Caso en que se encuentre un comentario
-                if self.current_char == ' ' and self.get_next_char(line,self.pos) == '(' and self.get_next_char(line,self.pos + 1) == '*':
-                    self.comment_inside = ''
-                    self.comment(False)
-                    self.comments.append(self.comment_inside)
-                    self.comment_inside = ''
-                #Caso en que se encuentre un comentario al inicio
-                elif self.current_char == '(' and self.get_next_char(line,self.pos) == '*':
-                    self.comment()
-                    self.comments.append(self.current_string)
-                    self.current_string = ''
-                #Caso que sea charset con comilla simple
-                elif self.current_char == '[' and self.get_next_char(self.actual_line,self.pos) == "'":
-                    if self.current_string != '': #No es al inicio que lo encuentra
-                        self.process_list(False)
-                    else: #Lo encuentra al inicio
-                        self.process_list()
-                    self.temp_array = []
-                #Caso que sea charset con comilla doble
-                elif self.current_char == '[' and self.get_next_char(self.actual_line,self.pos) == '"':
-                    if self.current_string != '': #No es al inicio que lo encuentra
-                        self.process_list(False)
-                    else: #Lo encuentra al inicio
-                        self.process_list()
-                    self.temp_array = []
-                #Caso que sea charset con negacion
-                elif self.current_char == '[' and self.get_next_char(self.actual_line,self.pos) == '^':
-                    if self.current_string != '': #No es al inicio que lo encuentra
-                        self.process_list(False)
-                    else: #Lo encuentra al inicio
-                        self.process_list()
-                #Caso encuentra regex con comilla simple
-                elif self.current_char == "'":
-                    self.evaluate_single()
-                #Caso encuentra regex con comilla doble
-                elif self.current_char == '"':
-                    self.evaluate_double()
-                #Caso encuentra espacio vacio
-                elif self.current_char == ' ':
-                    self.current_char = self.get_next_char(self.actual_line,self.pos)
-                    self.pos += 1
-                #Caso encuentra todo ascii
-                elif self.current_char == '-':
-                    self.get_all_ascii()
-                #Caso encuentra un | seguido de vacio
-                elif self.current_char == '|' and self.get_next_char(self.actual_line,self.pos) == ' ':
-                    self.current_char = self.get_next_char(self.actual_line,self.pos)
-                    self.pos += 1
-                #Caso encuentra un simbolo de regex
-                elif self.current_char in self.symbols.keys():
-                    self.current_string += self.current_char
-                    self.current_char = self.get_next_char(self.actual_line,self.pos)
-                    self.pos += 1
-                #Caso encuentra una diferencia de charsets
-                elif self.current_char == '#' and self.get_next_char(self.actual_line,self.pos) == '[':
-                    self.current_char = self.get_next_char(self.actual_line,self.pos)
-                    self.pos += 1
-                    self.process_list(False,True) #No es al inicio que lo encuentra y es una diferencia
-                    self.current_string = list(set(self.second_temp_array) - set(self.temp_array))
-                    temp_string = ''
-                    temp_string += '('
-                    #join all the elements in the array with | except the last one
-                    temp_string += '|'.join(self.current_string)
-                    temp_string += ')'
-                    self.current_string = temp_string
-                    self.current_char = self.get_next_char(self.actual_line,self.pos)
-                    self.pos += 1
-                #Es una variable
-                else:
-                    temp_word = ''
-                    while self.current_char != "'" and self.current_char not in self.symbols.keys() and self.current_char != '[' and self.current_char != '"' and self.current_char != ' ' and self.current_char != '\n':
-                        if self.current_char not in self.symbols.keys():
-                            temp_word += self.current_char
-                            self.current_char = self.get_next_char(self.actual_line,self.pos)
-                            self.pos += 1
-                    if temp_word in self.definitions.keys(): #Es una variable definida previamente
-                        self.current_string += self.definitions[temp_word]
-                        self.rule_stack[self.token_name].append(self.current_string)
-                        temp_word = ''
-                        self.current_string = ''
-                        self.current_char = self.get_next_char(self.actual_line,self.pos)
-                        self.pos += 1
-            if self.current_string != '':
-                self.rule_stack[self.token_name].append(self.current_string)
-                self.current_string = ''
-            break
+                i = self.pos
 
     '''
     Metodo que procesa al encontrar rule
@@ -184,7 +104,7 @@ class Reader():
         self.temp_array = []
         self.coincidir(' ')
         self.coincidir('=')
-        self.current_char = self.get_next_char(self.actual_line,self.pos)
+        self.current_char = self.get_next_char(self.file_string,self.pos)
         self.pos += 1
         self.rule_stack[key] = []
 
@@ -202,11 +122,12 @@ class Reader():
         self.coincidir('=')
         self.coincidir(' ')
         self.process_expression()
+        print('POSICION: ',self.pos)
         self.definitions[key] = self.current_string
         if self.current_char == ' ':
-            self.current_char = self.get_next_char(self.actual_line,self.pos)
+            self.current_char = self.get_next_char(self.file_string,self.pos)
             self.pos += 1
-            if self.current_char == '(' and self.get_next_char(self.actual_line,self.pos) == '*':
+            if self.current_char == '(' and self.get_next_char(self.file_string,self.pos) == '*':
                 self.current_string = ''
                 self.comment()
                 self.comments.append(self.current_string)
@@ -218,34 +139,35 @@ class Reader():
     def process_name(self):
         while self.current_char != ' ':
             self.current_string += self.current_char
-            self.current_char = self.get_next_char(self.actual_line,self.pos)
+            self.current_char = self.get_next_char(self.file_string,self.pos)
             self.pos += 1
+            self.counter_increment += 1
 
     '''
     Este metodo procesa las lineas que corresponden a un let la parte de definicion
     '''
     def process_expression(self):
-        while self.current_char != '\n' and self.current_char != None:
+        while self.current_char!= '\n' and self.current_char != None:
             #Caso es un charset con comillas simples
-            if self.current_char == '[' and self.get_next_char(self.actual_line,self.pos) == "'":
+            if self.current_char == '[' and self.get_next_char(self.file_string,self.pos) == "'":
                 if self.current_string != '': #Es una expresion que ya tiene algo
                     self.process_list(False)
                 else: #Es una expresion que no tiene nada
                     self.process_list()
             #Caso es un comentario
-            elif self.current_char == ' ' and self.get_next_char(self.actual_line,self.pos) == '(' and self.get_next_char(self.actual_line,self.pos + 1) == '*':
+            elif self.current_char == ' ' and self.get_next_char(self.file_string,self.pos) == '(' and self.get_next_char(self.file_string,self.pos + 1) == '*':
                 self.comment_inside = ''
                 self.comment(init=False) #No es al inicio
                 self.comments.append(self.comment_inside)
                 self.comment_inside= ''
             #Caso es un charset con comillas dobles
-            elif self.current_char == '[' and self.get_next_char(self.actual_line,self.pos) == '"':
+            elif self.current_char == '[' and self.get_next_char(self.file_string,self.pos) == '"':
                 if self.current_string != '': #Es una expresion que ya tiene algo
                     self.process_list(False)
                 else: #Es una expresion que no tiene nada
                     self.process_list()
             #Caso es un charset con negacion
-            elif self.current_char == '[' and self.get_next_char(self.actual_line,self.pos) == '^':
+            elif self.current_char == '[' and self.get_next_char(self.file_string,self.pos) == '^':
                 if self.current_string != '': #Es una expresion que ya tiene algo
                     self.process_list(False)
                 else: #Es una expresion que no tiene nada
@@ -256,18 +178,22 @@ class Reader():
             #Caso es una expresion con comillas dobles
             elif self.current_char == '"':
                 self.evaluate_double()
+            #Caso encuentra espacio vacio
+            elif self.current_char == ' ':
+                self.current_char = self.get_next_char(self.file_string,self.pos)
+                self.pos += 1
             #Caso es un simbolo de regex
             elif self.current_char in self.symbols.keys():
                 self.current_string += self.current_char
-                self.current_char = self.get_next_char(self.actual_line,self.pos)
+                self.current_char = self.get_next_char(self.file_string,self.pos)
                 self.pos += 1
             #Caso es todo ascii
             elif self.current_char == '-':
                 #return all ascii
                 self.get_all_ascii()
             #Caso es una diferencia de charsets
-            elif self.current_char == '#' and self.get_next_char(self.actual_line,self.pos) == '[':
-                self.current_char = self.get_next_char(self.actual_line,self.pos)
+            elif self.current_char == '#' and self.get_next_char(self.file_string,self.pos) == '[':
+                self.current_char = self.get_next_char(self.file_string,self.pos)
                 self.pos += 1
                 self.process_list(False,True) #Es una diferencia
                 #Se hace la diferencia de charsets y se coloca en el current string
@@ -278,20 +204,153 @@ class Reader():
                 temp_string += '|'.join(self.current_string)
                 temp_string += ')'
                 self.current_string = temp_string
-                self.current_char = self.get_next_char(self.actual_line,self.pos)
+                self.current_char = self.get_next_char(self.file_string,self.pos)
                 self.pos += 1
             #Es una palabra
             else:
                 temp_word = ''
-                while self.current_char != "'" and self.current_char not in self.symbols.keys() and self.current_char != '[' and self.current_char != '"':
+                while self.current_char != "'" and self.current_char not in self.symbols.keys() and self.current_char != '[' and self.current_char != '"' and self.current_char != ' ' and self.current_char != ' ' and self.current_char != None:
                     temp_word += self.current_char
-                    self.current_char = self.get_next_char(self.actual_line,self.pos)
+                    self.current_char = self.get_next_char(self.file_string,self.pos)
                     self.pos += 1
 
                 #Es una palabra que se encuentra definida previamente
                 if temp_word in self.definitions.keys():
                     self.current_string += self.definitions[temp_word]
                     temp_word = ''
+
+    '''
+    Este metodo procesa las lineas que se encuentran dentro de rule para obtener los tokens
+    '''
+    def process_token(self):
+        self.actual_tok = TokenObject()
+        while self.current_char != '\n' and self.current_char !=None:
+
+            #Caso en que se encuentre un comentario
+            if self.current_char == ' ' and self.get_next_char(self.file_string,self.pos) == '(' and self.get_next_char(self.file_string,self.pos + 1) == '*':
+                self.comment_inside = ''
+                self.comment(False)
+                self.comments.append(self.comment_inside)
+                self.comment_inside = ''
+            #Caso en que se encuentre un comentario al inicio
+            elif self.current_char == '(' and self.get_next_char(self.file_string,self.pos) == '*':
+                self.comment()
+                self.comments.append(self.current_string)
+                self.current_string = ''
+            #Caso que sea charset con comilla simple
+            elif self.current_char == '[' and self.get_next_char(self.file_string,self.pos) == "'":
+                if self.current_string != '': #No es al inicio que lo encuentra
+                    self.process_list(False)
+                else: #Lo encuentra al inicio
+                    self.process_list()
+                self.temp_array = []
+            #Caso que sea charset con comilla doble
+            elif self.current_char == '[' and self.get_next_char(self.file_string,self.pos) == '"':
+                if self.current_string != '': #No es al inicio que lo encuentra
+                    self.process_list(False)
+                else: #Lo encuentra al inicio
+                    self.process_list()
+                self.temp_array = []
+            elif self.current_char == '{':
+                if self.current_string != '':
+                    self.token_name_i = self.current_string
+                    if self.token_name_i not in self.definitions.keys():
+                        self.actual_tok.token = self.token_name_i
+                        self.actual_tok.value = self.token_name_i
+                self.actual_tok.definition = self.process_action()
+                print('procese acction')
+            #Caso que sea charset con negacion
+            elif self.current_char == '[' and self.get_next_char(self.file_string,self.pos) == '^':
+                if self.current_string != '': #No es al inicio que lo encuentra
+                    self.process_list(False)
+                else: #Lo encuentra al inicio
+                    self.process_list()
+            #Caso encuentra regex con comilla simple
+            elif self.current_char == "'":
+                self.evaluate_single()
+            #Caso encuentra regex con comilla doble
+            elif self.current_char == '"':
+                self.evaluate_double()
+            #Caso encuentra espacio vacio
+            elif self.current_char == ' ':
+                self.current_char = self.get_next_char(self.file_string,self.pos)
+                self.pos += 1
+            #Caso encuentra todo ascii
+            elif self.current_char == '-':
+                self.get_all_ascii()
+            #Caso encuentra un | seguido de vacio
+            elif self.current_char == '|' and self.get_next_char(self.file_string,self.pos) == ' ':
+                self.current_char = self.get_next_char(self.file_string,self.pos)
+                self.pos += 1
+            #Caso encuentra un simbolo de regex
+            elif self.current_char in self.symbols.keys():
+                self.current_string += self.current_char
+                self.current_char = self.get_next_char(self.file_string,self.pos)
+                self.pos += 1
+            #Caso encuentra una diferencia de charsets
+            elif self.current_char == '#' and self.get_next_char(self.file_string,self.pos) == '[':
+                self.current_char = self.get_next_char(self.file_string,self.pos)
+                self.pos += 1
+                self.process_list(False,True) #No es al inicio que lo encuentra y es una diferencia
+                self.current_string = list(set(self.second_temp_array) - set(self.temp_array))
+                temp_string = ''
+                temp_string += '('
+                #join all the elements in the array with | except the last one
+                temp_string += '|'.join(self.current_string)
+                temp_string += ')'
+                self.current_string = temp_string
+                self.current_char = self.get_next_char(self.file_string,self.pos)
+                self.pos += 1
+            #Es una variable
+            else:
+                temp_word = ''
+                while self.current_char != "'" and self.current_char not in self.symbols.keys() and self.current_char != '[' and self.current_char != '"' and self.current_char != ' ' and self.current_char != '\n':
+                    if self.current_char not in self.symbols.keys():
+                        temp_word += self.current_char
+                        self.current_char = self.get_next_char(self.file_string,self.pos)
+                        self.pos += 1
+                if temp_word in self.definitions.keys(): #Es una variable definida previamente
+                    print('es una variable')
+
+                    self.actual_tok.token = temp_word
+                    self.current_string += self.definitions[temp_word]
+                    self.actual_tok.value = self.current_string
+                    self.rule_stack[self.token_name].append(self.current_string)
+                    self.token_name_i = temp_word
+                    temp_word = ''
+                    self.current_string = ''
+                    # self.current_char = self.get_next_char(self.file_string,self.pos)
+                    # self.pos += 1
+        if self.current_string != '':
+            if self.actual_tok.definition is None:
+                self.actual_tok.token = self.current_string
+                self.actual_tok.value = self.current_string
+            self.tokens_file.append(self.actual_tok)
+            self.rule_stack[self.token_name].append(self.current_string)
+
+            self.current_string = ''
+        elif self.current_string == '' and self.actual_tok.token is not None:
+            self.tokens_file.append(self.actual_tok)
+            self.pos += 1
+        else:
+            self.pos += 1
+
+
+    def process_action(self):
+        self.coincidir('{')
+        temp_action_string = ''
+        while self.current_char != '}':
+            temp_action_string += self.current_char
+            self.current_char = self.get_next_char(self.file_string,self.pos)
+            self.pos += 1
+
+        self.coincidir('}')
+        print('token name',self.token_name_i)
+        self.actions[self.token_name_i] = {}
+        print('ACTI',self.actions)
+        self.actions[self.token_name_i] = temp_action_string
+        print('ACTI2',self.actions)
+        return temp_action_string
 
     #Metodo para obtener todo ascii printeable
     def get_all_ascii(self):
@@ -324,7 +383,7 @@ class Reader():
                 self.evaluate_double(True)
             elif self.current_char == '^':
                 negative = True #Si es una negacion se debe restar de todo el ascii
-                self.current_char = self.get_next_char(self.actual_line,self.pos)
+                self.current_char = self.get_next_char(self.file_string,self.pos)
                 self.pos += 1
 
         self.coincidir(']')
@@ -367,8 +426,8 @@ class Reader():
         self.coincidir('"')
         text = ''
         while self.current_char != '"':
-            if self.current_char == '\\' and self.get_next_char(self.actual_line,self.pos) in self.valid_scapes:
-                self.current_char = self.get_next_char(self.actual_line,self.pos)
+            if self.current_char == '\\' and self.get_next_char(self.file_string,self.pos) in self.valid_scapes:
+                self.current_char = self.get_next_char(self.file_string,self.pos)
                 self.pos += 1
                 if self.current_char in self.valid_scapes:
                     if self.current_char == 'n':
@@ -397,9 +456,9 @@ class Reader():
                 self.temp_array.append(text)
                 text = ''
                 #self.current_string += self.current_char
-                self.current_char = self.get_next_char(self.actual_line,self.pos)
+                self.current_char = self.get_next_char(self.file_string,self.pos)
                 self.pos += 1
-            elif self.current_char == '\\' and self.get_next_char(self.actual_line,self.pos) not in self.valid_scapes:
+            elif self.current_char == '\\' and self.get_next_char(self.file_string,self.pos) not in self.valid_scapes:
                 string_concat = ''
                 text = self.current_char
                 if len(str(ord(text))) ==1:
@@ -410,7 +469,7 @@ class Reader():
                     text = str(ord(text))
                 string_concat += '('+text + ')'
                 text = ''
-                self.current_char = self.get_next_char(self.actual_line,self.pos)
+                self.current_char = self.get_next_char(self.file_string,self.pos)
                 self.pos += 1
                 text = self.current_char
                 if len(str(ord(text))) ==1:
@@ -422,7 +481,7 @@ class Reader():
                 string_concat += '('+text+')'
                 self.temp_array.append(string_concat)
                 text = ''
-                self.current_char = self.get_next_char(self.actual_line,self.pos)
+                self.current_char = self.get_next_char(self.file_string,self.pos)
                 self.pos += 1
 
             else:
@@ -436,7 +495,7 @@ class Reader():
                     text = str(ord(text))
                 self.temp_array.append(text)
                 text = ''
-                self.current_char = self.get_next_char(self.actual_line,self.pos)
+                self.current_char = self.get_next_char(self.file_string,self.pos)
                 self.pos += 1
         if inside_list:
             self.current_string += text #vacio porque esta en temp array
@@ -483,8 +542,8 @@ class Reader():
         #get one char
         text = ''
         while self.current_char != "'":
-            if self.current_char == '\\' and self.get_next_char(self.actual_line,self.pos) in self.valid_scapes:
-                self.current_char = self.get_next_char(self.actual_line,self.pos)
+            if self.current_char == '\\' and self.get_next_char(self.file_string,self.pos) in self.valid_scapes:
+                self.current_char = self.get_next_char(self.file_string,self.pos)
                 self.pos += 1
                 if self.current_char == 'n':
                     text = '\n'
@@ -504,15 +563,15 @@ class Reader():
                     text = '\\'
                 #print('TEXT here',text)
                 self.current_string += self.current_char
-                self.current_char = self.get_next_char(self.actual_line,self.pos)
+                self.current_char = self.get_next_char(self.file_string,self.pos)
                 self.pos += 1
-            elif self.current_char == '\\' and self.get_next_char(self.actual_line,self.pos) not in self.valid_scapes:
+            elif self.current_char == '\\' and self.get_next_char(self.file_string,self.pos) not in self.valid_scapes:
                 pass
             else:
                 text += self.current_char
                 #print('TEXT',text)
 
-                self.current_char = self.get_next_char(self.actual_line,self.pos)
+                self.current_char = self.get_next_char(self.file_string,self.pos)
                 self.pos += 1
         #print('SALI DE EVALUAR SINGLE',text,ord(text))
         if len(str(ord(text))) ==1:
@@ -537,10 +596,10 @@ class Reader():
             self.coincidir('(')
             self.current_string += self.current_char
             self.coincidir('*')
-            while self.current_char != '*' or self.get_next_char(self.actual_line,self.pos) != ')':
+            while self.current_char != '*' or self.get_next_char(self.file_string,self.pos) != ')':
                 #print('CURRENT',self.current_char,self.pos,self.get_next_char(self.actual_line,self.pos))
                 self.current_string += self.current_char
-                self.current_char = self.get_next_char(self.actual_line,self.pos)
+                self.current_char = self.get_next_char(self.file_string,self.pos)
                 self.pos += 1
                 #print('SELF CURRENT',self.current_char,self.get_next_char(self.actual_line,self.pos))
 
@@ -550,15 +609,15 @@ class Reader():
             self.current_string += self.current_char
             self.coincidir(')')
         else:
-            self.current_char = self.get_next_char(self.actual_line,self.pos)
+            self.current_char = self.get_next_char(self.file_string,self.pos)
             self.pos += 1
             self.comment_inside += self.current_char
             self.coincidir('(')
             self.comment_inside += self.current_char
             self.coincidir('*')
-            while self.current_char != '*' and self.get_next_char(self.actual_line,self.pos) != ')':
+            while self.current_char != '*' and self.get_next_char(self.file_string,self.pos) != ')':
                 self.comment_inside += self.current_char
-                self.current_char = self.get_next_char(self.actual_line,self.pos)
+                self.current_char = self.get_next_char(self.file_string,self.pos)
                 self.pos += 1
 
             self.comment_inside += self.current_char
@@ -568,17 +627,18 @@ class Reader():
 
     def coincidir(self,terminal):
         if self.current_char == terminal:
-            self.current_char = self.get_next_char(self.actual_line,self.pos)
+            self.current_char = self.get_next_char(self.file_string,self.pos)
             self.pos += 1
+            self.counter_increment += 1
         elif self.current_char == None:
             pass
         else:
             print('Error')
 
-    def get_next_char(self, line, pos = None):
+    def get_next_char(self, string, pos = None):
         index = pos
-        if index + 1 < len(line):
-            return line[index + 1]
+        if index + 1 < len(string):
+            return string[index + 1]
         else:
             return None
 

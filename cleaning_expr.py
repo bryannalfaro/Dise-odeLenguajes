@@ -191,16 +191,23 @@ class Clear():
         new_expression = []
         flag = False
         temp_number = ''
+        print('PREPOOOO',self.expression)
         #ITERATE THE EXPRESSION and find number count 2 more and create a symbol
         for i in range(len(self.expression)):
-            if self.expression[i] not in self.symbols:
-                temp_number += self.expression[i]
-            elif self.expression[i] in self.symbols and temp_number != '':
-                new_expression.append(temp_number)
-                new_expression.append(self.expression[i])
-                temp_number = ''
-            else:
-                new_expression.append(self.expression[i])
+                if self.expression[i] == '#':
+                    new_expression.append(self.expression[i])
+                elif self.expression[i] not in self.symbols and self.expression[i] != Symbol('ε').name and len(temp_number) <3:
+                    temp_number += self.expression[i]
+                elif self.expression[i] in self.symbols and temp_number != '' and len(temp_number) == 3:
+                    new_expression.append(temp_number)
+                    new_expression.append(self.expression[i])
+                    temp_number = ''
+                elif self.expression[i] not in self.symbols and self.expression[i] != Symbol('ε').name and len(temp_number) == 3:
+                    new_expression.append(temp_number)
+                    temp_number = ''
+                    temp_number += self.expression[i]
+                else:
+                    new_expression.append(self.expression[i])
 
         print('ARRAY OF EXPRESSION: ',new_expression)
         self.expression = new_expression
@@ -214,14 +221,20 @@ class Clear():
         temp_number = ''
         #ITERATE THE EXPRESSION and find number count 2 more and create a symbol
         for i in range(len(self.expression)):
-            if self.expression[i] not in self.symbols:
-                temp_number += self.expression[i]
-            elif self.expression[i] in self.symbols and temp_number != '':
-                new_expression.append(temp_number)
-                new_expression.append(self.expression[i])
-                temp_number = ''
-            else:
-                new_expression.append(self.expression[i])
+                if self.expression[i] == '#':
+                    new_expression.append(self.expression[i])
+                elif self.expression[i] not in self.symbols and self.expression[i] != Symbol('ε').name and len(temp_number) <3:
+                    temp_number += self.expression[i]
+                elif self.expression[i] in self.symbols and temp_number != '' and len(temp_number) == 3:
+                    new_expression.append(temp_number)
+                    new_expression.append(self.expression[i])
+                    temp_number = ''
+                elif self.expression[i] not in self.symbols and self.expression[i] != Symbol('ε').name and len(temp_number) == 3:
+                    new_expression.append(temp_number)
+                    temp_number = ''
+                    temp_number += self.expression[i]
+                else:
+                    new_expression.append(self.expression[i])
 
         print('NEWW3',new_expression)
 

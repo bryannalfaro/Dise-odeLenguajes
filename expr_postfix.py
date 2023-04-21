@@ -4,23 +4,60 @@ from automata.node_automata import Node
 from cleaning_expr import Clear
 from Symbol import Symbol
 class PostfixConverter:
-    def __init__(self, expression, augmented_value=None):
-
-        if augmented_value is None:
-             self.expression = expression
-        else:
-            self.expression = '('+expression+')' + augmented_value
-
+    def __init__(self, expression, augmented_value=None, tokens_file=None):
+        new_expression = []
+        self.expression = expression
         self.alphabet = AlphabetDefinition()
         self.symbols = self.alphabet.getSymbolDictionary()
         self.stack_operators = []
         self.postfix_stack = []
         self.nodes_stack = []
+        self.tokens_file = tokens_file
+        temp_number = ''
+        print('INGRESIING TO CONVERTER',self.expression, len(self.expression))
+        for i in range(len(self.expression)):
+            if self.expression[i] not in self.symbols and self.expression[i] != Symbol('#').name:
+                temp_number += self.expression[i]
+            elif self.expression[i] in self.symbols and temp_number != '':
+                new_expression.append(temp_number)
+                new_expression.append(self.expression[i])
+                temp_number = ''
+            else:
+                new_expression.append(self.expression[i])
+
+        if augmented_value is None:
+             self.expression = new_expression
+        else:
+            print('Adding')
+            self.expression = '('+expression+')' + augmented_value
+            new_expression = []
+            temp_number = ''
+            for i in range(len(self.expression)):
+                if self.expression[i] == '#':
+                    new_expression.append(augmented_value)
+                elif self.expression[i] not in self.symbols and self.expression[i] != Symbol('ε').name and len(temp_number) <3:
+                    temp_number += self.expression[i]
+                elif self.expression[i] in self.symbols and temp_number != '' and len(temp_number) == 3:
+                    new_expression.append(temp_number)
+                    new_expression.append(self.expression[i])
+                    temp_number = ''
+                elif self.expression[i] not in self.symbols and self.expression[i] != Symbol('ε').name and len(temp_number) == 3:
+                    new_expression.append(temp_number)
+                    temp_number = ''
+                    temp_number += self.expression[i]
+                else:
+                    new_expression.append(self.expression[i])
+            self.expression = new_expression
+
+
 
     def build_Alphabet(self):
         for i in self.expression:
-            if i not in self.symbols:
-                self.alphabet.addSymbol(Symbol(i))
+            if i not in self.symbols and i != Symbol('ε').name and i !='#':
+                self.alphabet.addSymbol(Symbol(i, True))
+            else:
+                if i == '#':
+                    self.alphabet.addSymbol(Symbol(i))
         return self.alphabet
 
 
@@ -48,6 +85,7 @@ class PostfixConverter:
         arr_preprocessed = self.expression
         #Iterate through the expression
         print(''.join(self.expression))
+        print('LENGTH',len(self.expression))
         for i in arr_preprocessed:
             #print('ENTRY',i,self.stack_operators)
             #check if it is an alphabet symbol
@@ -77,7 +115,7 @@ class PostfixConverter:
                     while len(self.stack_operators) != 0 and self.symbols[i].precedence <= self.symbols[self.stack_operators[-1]].precedence:
                         self.postfix_stack.append(self.stack_operators.pop())
                     self.stack_operators.append(i)
-            #print("SALIR DEL FOR")
+            print("SALIR DEL FOR")
         #Empty the stack
         while len(self.stack_operators) != 0:
 
@@ -122,5 +160,8 @@ class PostfixConverter:
                         node = Node(i)
                         node.left = self.nodes_stack.pop()
                         self.nodes_stack.append(node)
-        return self.nodes_stack.pop()
+
+        root = self.nodes_stack.pop()
+        Node.tokens_list = self.tokens_file
+        return root
 

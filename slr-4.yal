@@ -12,18 +12,9 @@ let id = letter(letter|str|digit)*
 let number = digits('.'digits)?('E'['+''-']?digits)?
 
 rule tokens =
-    ws
-  | id        { return ID }               (* Cambie por una acción válida, que devuelva el token *)
-  | number    { return NUMBER }
-  | ';'       { return SEMICOLON }
-  | ":="      { return ASSIGNOP }
-  | '<'       { return LT }
-  | '='       { return EQ }
-  | '+'       { return PLUS }
-  | '-'       { return MINUS }
-  | '*'       { return TIMES }
-  | '/'       { return DIV }
-  | '('       { return LPAREN }
-  | ')'       { return RPAREN }
+    ws        {a=4
+print('el numero es',a)}
+  | id        {print("token ID") }               (* Cambie por una acción válida, que devuelva el token *)
+  | number    {print("token NUMBER") }
 
 (* Introducir cualquier trailer aqui *)

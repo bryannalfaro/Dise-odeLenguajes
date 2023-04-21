@@ -10,4 +10,4 @@ class Symbol():
         else:
             self.name = str(name)
             Symbol.counter_id += 1
-            self.ascii_repr = int(var_ascii)
+            self.ascii_repr = int(name)

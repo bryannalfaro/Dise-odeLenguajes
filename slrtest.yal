@@ -1,10 +1,17 @@
-(* Lexer para Gramática No. 1 - Expresiones aritméticas simples para variables *)
+(* Lexer para Gramática No. 1 - Expresiones aritméticas simples para variables
+ sigo aqui*)
 
 (* Introducir cualquier header aqui *)
 
-let delim = "\\"
+let delim = 'a'
+let delim2 = ['a'-'f']
+let letter = ['a'-'z']
+let digit = ['0'-'9']
 
-rule tokens =
-    delim
+rule gettoken =
+    delim2 { return DELIM2 }
+    | delim { return DELIM }
+    | letter
+    | digit
 
 (* Introducir cualquier trailer aqui *)

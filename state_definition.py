@@ -7,6 +7,7 @@ class State():
 
         self.is_initial = is_initial
         self.is_final = is_final
+        self.leaf_id = None
         self.mark_dfa = False
         self.list = []
 

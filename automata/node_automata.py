@@ -10,6 +10,8 @@ from Symbol import Symbol
 class Node():
     leaf_node = []
     counter_leaf = 0
+    tokens_list = None
+    counter_hash = 0
     def __init__(self, value):
         self.value = value
         self.id = uuid.uuid4().hex
@@ -20,6 +22,7 @@ class Node():
         self.label_leaf = None
         self.null_node = None
         self.follow = dict()
+        self.counter_hash = 0
 
 
     def make_alphabetic_automata(self,node):
@@ -148,6 +151,12 @@ class Node():
                  pass
             else:
                 self.label_leaf = Node.counter_leaf
+                if self.value == Symbol('#').name:
+                    print(
+                     'counter_hash: ',Node.counter_hash
+                    )
+                    Node.tokens_list[Node.counter_hash].id_leaf = self.label_leaf
+                    Node.counter_hash+=1
                 Node.counter_leaf+=1
                 Node.leaf_node.append(self)
 
@@ -321,11 +330,12 @@ class Node():
                 #print('IIII',i,self.leaf_node[i].value)
                 if self.leaf_node[i].value == Symbol('#').name:
                     state.is_final = True
+                    state.leaf_id = self.leaf_node[i].label_leaf
                     final_states.append(state)
 
 
         #create dfa
-        dfa = DFA_automata(d_states,alfabeto,[d_tran],d_states[0],final_states)
+        dfa = DFA_automata(d_states,alfabeto,[d_tran],d_states[0],final_states,Node.tokens_list)
         return dfa
 
 

@@ -10,10 +10,10 @@ let id = letter(letter|digit)*
 
 rule tokens =
     ws
-  | id        { return ID }               (* Cambie por una acción válida, que devuelva el token *)
-  | '+'       { return PLUS }
-  | '*'       { return TIMES }
-  | '('       { return LPAREN }
-  | ')'       { return RPAREN }
+  | id        { print('encontre token') }               (* Cambie por una acción válida, que devuelva el token *)
+  | '+'       { print('encontre token') }
+  | '*'       { print('encontre token') }
+  | '('       { print('encontre token') }
+  | ')'       { print('encontre token') }
 
 (* Introducir cualquier trailer aqui *)
