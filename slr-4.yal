@@ -1,3 +1,6 @@
+(*
+ID = 'ID'
+*)
 (* Lexer para Gramática No. 4 *)
 
 (* Introducir cualquier header aqui *)
@@ -19,4 +22,4 @@ print('el numero es',a)}
 
 (* Introducir cualquier trailer aqui *)
 
-{ print("fin del archivo") }
+(*print("fin del archivo") *)

@@ -26,7 +26,10 @@ tokens  = dfa.get_identified()
 yal_tokens = dfa.get_list_tokens()
 
 for i in tokens:
-    exec(i.definition)
+    if i.definition != None:
+        exec(i.definition.strip())
+    else:
+        print('NO DEFINITION',i.token)
 ''')
             if self.trailer is not None:
                 f.write(
