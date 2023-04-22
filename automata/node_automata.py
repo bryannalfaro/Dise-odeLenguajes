@@ -325,13 +325,24 @@ class Node():
         #get final states
         final_states = []
         #evaluate if there is # symbol
+        # print('NODEEE')
+        # for i in Node.leaf_node:
+        #     print('NODEEE',i.value)
+
+        #print('DSTATES AA')
+        # for state in d_states:
+        #     print(state.name)
         for state in d_states:
+            #print('STATE LIST AAAAA',state.list)
             for i in state.list:
                 #print('IIII',i,self.leaf_node[i].value)
-                if self.leaf_node[i].value == Symbol('#').name:
+                if Node.leaf_node[i].value == Symbol('#').name:
+                    #print('FINAL',state, self.leaf_node[i].value)
                     state.is_final = True
-                    state.leaf_id = self.leaf_node[i].label_leaf
+                    state.leaf_id = i
+                    #print('STATE ID',state.leaf_id)
                     final_states.append(state)
+                    break
 
 
         #create dfa

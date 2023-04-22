@@ -9,8 +9,13 @@ validate =False
 State.counter = 0
 
 #read file
-reader = Reader('slr-4.yal')
-reader.read_file()
+reader = Reader('test3.yal')
+flag  = reader.read_file()
+
+if flag == False:
+    print('Error reading file')
+    exit()
+
 expression = reader.get_tokens_expression()
 
 a = input("Enter to continue...") #solo para la siguiente

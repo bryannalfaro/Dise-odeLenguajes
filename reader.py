@@ -30,6 +30,8 @@ class Reader():
         self.header = '' #PREGUNTA PORQUE SINO SE PASA A ARRAY
         self.trailer = ''
         self.actual_tok = None
+        self.errors = []
+        self.isError = False
 
     def read_file(self):
         #read line by line
@@ -38,18 +40,22 @@ class Reader():
                 #add to the file string
                 self.file_string += line
             self.process_file()
-            print('MEGA STRING',self.file_string)
-            print('COMMENTS',self.comments)
-            print('TOKENS',self.rule_stack)
-            print('DEFINITION',self.definitions)
-            print('ACTIONS',self.actions)
-            self.header = self.comments[0]
-            self.trailer = self.comments[-1]
-            print('HEADER',self.header)
-            print('TRAILER',self.trailer)
-            for i in self.tokens_file:
-                print(
-                'TOKE',(i.token,i.value,i.definition,i.id_leaf))
+            if len(self.errors) > 0:
+                for error in self.errors:
+                    print(error)
+                return False
+            else:
+                print('MEGA STRING',self.file_string)
+                print('COMMENTS',self.comments)
+                print('TOKENS',self.rule_stack)
+                print('DEFINITION',self.definitions)
+                print('ACTIONS',self.actions)
+                self.header = self.comments[0]
+                self.trailer = self.comments[-1]
+                print('HEADER',self.header)
+                print('TRAILER',self.trailer)
+                return True
+
 
     '''
     Este metodo recorre el diccionario de tokens y arma el string
@@ -91,8 +97,15 @@ class Reader():
                     self.processing_tokens = True
                 # if self.current_char == '{':
                 #     self.header = self.process_action(False)
-                else:
+                elif self.current_char == '\n' or self.current_char == ' ' or self.current_char == '\t':
                     pass
+                else:
+                    self.errors.append('ERROR: Invalid syntax')
+                    #ignore until the end of the line
+                    while self.current_char != '\n':
+                        self.current_char = self.get_next_char(self.file_string,self.pos)
+                        self.pos += 1
+
                 self.pos += 1
                 i = self.pos
 
@@ -130,8 +143,9 @@ class Reader():
         self.coincidir('=')
         self.coincidir(' ')
         self.process_expression()
-        print('POSICION: ',self.pos)
-        self.definitions[key] = self.current_string
+        #print('POSICION: ',self.pos)
+        if self.isError == False:
+            self.definitions[key] = self.current_string
         if self.current_char == ' ':
             self.current_char = self.get_next_char(self.file_string,self.pos)
             self.pos += 1
@@ -142,6 +156,7 @@ class Reader():
                 self.current_string = ''
         #value = self.current_string
         self.current_string = ''
+        self.isError = False
 
     #Obtener el nombre de variable en let
     def process_name(self):
@@ -217,7 +232,7 @@ class Reader():
             #Es una palabra
             else:
                 temp_word = ''
-                while self.current_char != "'" and self.current_char not in self.symbols.keys() and self.current_char != '[' and self.current_char != '"' and self.current_char != ' ' and self.current_char != ' ' and self.current_char != None:
+                while self.current_char != "'" and self.current_char != '\n' and self.current_char not in self.symbols.keys() and self.current_char != '[' and self.current_char != '"' and self.current_char != ' ' and self.current_char != ' ' and self.current_char != None:
                     temp_word += self.current_char
                     self.current_char = self.get_next_char(self.file_string,self.pos)
                     self.pos += 1
@@ -226,6 +241,14 @@ class Reader():
                 if temp_word in self.definitions.keys():
                     self.current_string += self.definitions[temp_word]
                     temp_word = ''
+                else:
+                    #error
+                    self.errors.append('Error: La palabra ' + temp_word + ' no es reconocida')
+                    self.current_string += temp_word
+                    temp_word = ''
+                    self.isError = True
+
+
 
     '''
     Este metodo procesa las lineas que se encuentran dentro de rule para obtener los tokens
@@ -260,15 +283,18 @@ class Reader():
                     self.process_list()
                 self.temp_array = []
             elif self.current_char == '{':
-                if self.current_string != '':
-                    self.token_name_i = self.current_string
-                    if self.token_name_i not in self.definitions.keys():
-                        self.actual_tok.token = self.token_name_i
-                        self.actual_tok.value = self.token_name_i
-                self.actual_tok.definition = self.process_action()
-                print('procese acction')
-                # else:
-                #     self.trailer = self.process_action(False)
+                if self.isError == False:
+                    if self.current_string != '':
+                        self.token_name_i = self.current_string
+                        if self.token_name_i not in self.definitions.keys():
+                            self.actual_tok.token = self.token_name_i
+                            self.actual_tok.value = self.token_name_i
+                    self.actual_tok.definition = self.process_action()
+                    #print('procese acction')
+                    # else:
+                    #     self.trailer = self.process_action(False)
+                else:
+                    self.process_action(isValid=False)
 
             #Caso que sea charset con negacion
             elif self.current_char == '[' and self.get_next_char(self.file_string,self.pos) == '^':
@@ -312,6 +338,9 @@ class Reader():
                 self.current_string = temp_string
                 self.current_char = self.get_next_char(self.file_string,self.pos)
                 self.pos += 1
+            elif self.current_char == '\t':
+                self.current_char = self.get_next_char(self.file_string,self.pos)
+                self.pos += 1
             #Es una variable
             else:
                 temp_word = ''
@@ -321,7 +350,7 @@ class Reader():
                         self.current_char = self.get_next_char(self.file_string,self.pos)
                         self.pos += 1
                 if temp_word in self.definitions.keys(): #Es una variable definida previamente
-                    print('es una variable')
+                    #print('es una variable')
 
                     self.actual_tok.token = temp_word
                     self.current_string += self.definitions[temp_word]
@@ -330,8 +359,15 @@ class Reader():
                     self.token_name_i = temp_word
                     temp_word = ''
                     self.current_string = ''
+                    self.isError = False
                     # self.current_char = self.get_next_char(self.file_string,self.pos)
                     # self.pos += 1
+                else: #Es una variable no definida
+                    #string with the variable not defined
+                    self.errors.append('Error: variable {} no definida'.format(temp_word))
+                    temp_word = ''
+                    self.current_string = ''
+                    self.isError = True
         if self.current_string != '':
             if self.actual_tok.definition is None:
                 self.actual_tok.token = self.current_string
@@ -347,24 +383,27 @@ class Reader():
             self.pos += 1
 
 
-    def process_action(self,is_action=True):
+    def process_action(self,is_action=True,isValid = True):
         self.coincidir('{')
         temp_action_string = ''
+
         while self.current_char != '}':
                 temp_action_string += self.current_char
                 self.current_char = self.get_next_char(self.file_string,self.pos)
                 self.pos += 1
 
         self.coincidir('}')
-        if is_action:
-            print('token name',self.token_name_i)
+        if is_action and isValid:
+            #print('token name',self.token_name_i)
             self.actions[self.token_name_i] = {}
-            print('ACTI',self.actions)
+            #print('ACTI',self.actions)
             self.actions[self.token_name_i] = temp_action_string
-            print('ACTI2',self.actions)
+            #print('ACTI2',self.actions)
+            return temp_action_string
+        elif is_action == False and isValid:
             return temp_action_string
         else:
-            return temp_action_string
+            return None
 
     #Metodo para obtener todo ascii printeable
     def get_all_ascii(self):
@@ -533,7 +572,7 @@ class Reader():
     #Metodo para expandir un rango
     def expand_range(self):
         #get the ascii value of the first char and the last char and then expand the range
-        print('EXPANDING RANGE')
+        #print('EXPANDING RANGE')
         #pop the last element
         last = self.temp_array.pop()
         #pop the first element

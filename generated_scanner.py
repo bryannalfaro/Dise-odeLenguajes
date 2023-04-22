@@ -1,5 +1,5 @@
 
-ID = 'ID'
+PLUS = "PLUS"
 
 import pickle
 #read the dfa
@@ -17,8 +17,11 @@ tokens  = dfa.get_identified()
 yal_tokens = dfa.get_list_tokens()
 
 for i in tokens:
-    if i.definition != None:
-        exec(i.definition.strip())
+    if type(i) == str:
+        print(i)
     else:
-        print('NO DEFINITION',i.token)
-print("fin del archivo") 
+        if i.definition != None:
+            exec(i.definition.strip())
+        else:
+            print('NO DEFINITION',i.token)
+print('eof')

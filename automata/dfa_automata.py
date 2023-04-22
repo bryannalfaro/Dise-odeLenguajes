@@ -21,6 +21,7 @@ class DFA_automata(Automata):
         #print('SYMBOL',symbol)
         if state in self.transitions:
             if symbol in self.transitions[state]:
+                 #print('TRANSICION STATES',self.transitions[state][symbol])
                  return self.transitions[state][symbol][0]
             else:
                 return None
@@ -51,18 +52,21 @@ class DFA_automata(Automata):
                     counter_symbol += 1
             elif s0 == None and last_acceptance_state != None:
                 #print('NO',last_acceptance_state)
+                #print('LEAF LAST',last_acceptance_state.leaf_id)
                 self.search_idx(last_acceptance_state.leaf_id)
                 #reinicio el automata
                 s0 = self.initial
                 last_acceptance_state = None
                 counter_symbol = last_index_acceptance
             else:
-                #print('NO VALID')
+                error= 'NO VALID STRING '+chr(int(symbol))
+                self.identified_tokens.append(error)
                 counter_symbol += 1
                 s0 = self.initial
 
         #check the last acceptance state if it is not empty
         if last_acceptance_state != None:
+            print('LEAF LAST',last_acceptance_state.leaf_id)
             self.search_idx(last_acceptance_state.leaf_id)
 
     def search_idx(self,leaf_id):
