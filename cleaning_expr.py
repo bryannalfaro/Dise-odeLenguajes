@@ -236,7 +236,7 @@ class Clear():
                 else:
                     new_expression.append(self.expression[i])
 
-        print('NEWW3',new_expression)
+        #print('NEWW3',new_expression)
 
         other = []
         other = new_expression

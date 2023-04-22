@@ -14,7 +14,9 @@ let number = digits('.'digits)?('E'['+''-']?digits)?
 rule tokens =
     ws        {a=4
 print('el numero es',a)}
-  | id        {print("token ID") }               (* Cambie por una acción válida, que devuelva el token *)
+  | id        {print(ID) }               (* Cambie por una acción válida, que devuelva el token *)
   | number    {print("token NUMBER") }
 
 (* Introducir cualquier trailer aqui *)
+
+{ print("fin del archivo") }

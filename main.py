@@ -9,7 +9,7 @@ validate =False
 State.counter = 0
 
 #read file
-reader = Reader('slr-1.yal')
+reader = Reader('slrtest.yal')
 reader.read_file()
 expression = reader.get_tokens_expression()
 
@@ -55,7 +55,9 @@ with open('dfa', 'wb') as handle:
     pickle.dump(dfa_direct, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 #create the scanner
-scanner = GeneratingScanner()
+header = reader.header
+trailer = reader.trailer
+scanner = GeneratingScanner(header,trailer)
 scanner.build_scanner()
 print('----------------------------------------')
 

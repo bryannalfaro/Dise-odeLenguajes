@@ -27,6 +27,8 @@ class Reader():
         self.counter_increment = 0
         self.actions = {}
         self.tokens_file = []
+        self.header = '' #PREGUNTA PORQUE SINO SE PASA A ARRAY
+        self.trailer = ''
         self.actual_tok = None
 
     def read_file(self):
@@ -41,6 +43,10 @@ class Reader():
             print('TOKENS',self.rule_stack)
             print('DEFINITION',self.definitions)
             print('ACTIONS',self.actions)
+            self.header = self.comments[0]
+            self.trailer = self.comments[-1]
+            print('HEADER',self.header)
+            print('TRAILER',self.trailer)
             for i in self.tokens_file:
                 print(
                 'TOKE',(i.token,i.value,i.definition,i.id_leaf))
@@ -83,6 +89,8 @@ class Reader():
                 elif self.current_char == 'r' and self.get_next_char(self.file_string,self.pos) == 'u' and self.get_next_char(self.file_string,self.pos+1) == 'l' and self.get_next_char(self.file_string,self.pos+2) == 'e':
                     self.process_rule()
                     self.processing_tokens = True
+                # if self.current_char == '{':
+                #     self.header = self.process_action(False)
                 else:
                     pass
                 self.pos += 1
@@ -259,6 +267,9 @@ class Reader():
                         self.actual_tok.value = self.token_name_i
                 self.actual_tok.definition = self.process_action()
                 print('procese acction')
+                # else:
+                #     self.trailer = self.process_action(False)
+
             #Caso que sea charset con negacion
             elif self.current_char == '[' and self.get_next_char(self.file_string,self.pos) == '^':
                 if self.current_string != '': #No es al inicio que lo encuentra
@@ -336,21 +347,24 @@ class Reader():
             self.pos += 1
 
 
-    def process_action(self):
+    def process_action(self,is_action=True):
         self.coincidir('{')
         temp_action_string = ''
         while self.current_char != '}':
-            temp_action_string += self.current_char
-            self.current_char = self.get_next_char(self.file_string,self.pos)
-            self.pos += 1
+                temp_action_string += self.current_char
+                self.current_char = self.get_next_char(self.file_string,self.pos)
+                self.pos += 1
 
         self.coincidir('}')
-        print('token name',self.token_name_i)
-        self.actions[self.token_name_i] = {}
-        print('ACTI',self.actions)
-        self.actions[self.token_name_i] = temp_action_string
-        print('ACTI2',self.actions)
-        return temp_action_string
+        if is_action:
+            print('token name',self.token_name_i)
+            self.actions[self.token_name_i] = {}
+            print('ACTI',self.actions)
+            self.actions[self.token_name_i] = temp_action_string
+            print('ACTI2',self.actions)
+            return temp_action_string
+        else:
+            return temp_action_string
 
     #Metodo para obtener todo ascii printeable
     def get_all_ascii(self):
@@ -592,9 +606,9 @@ class Reader():
     #Metodo para evaluar comentario
     def comment(self, init=True):
         if init:
-            self.current_string += self.current_char
+            #self.current_string += self.current_char
             self.coincidir('(')
-            self.current_string += self.current_char
+            #self.current_string += self.current_char
             self.coincidir('*')
             while self.current_char != '*' or self.get_next_char(self.file_string,self.pos) != ')':
                 #print('CURRENT',self.current_char,self.pos,self.get_next_char(self.actual_line,self.pos))
@@ -604,9 +618,9 @@ class Reader():
                 #print('SELF CURRENT',self.current_char,self.get_next_char(self.actual_line,self.pos))
 
             print('SALIR')
-            self.current_string += self.current_char
+            #self.current_string += self.current_char
             self.coincidir('*')
-            self.current_string += self.current_char
+            #self.current_string += self.current_char
             self.coincidir(')')
         else:
             self.current_char = self.get_next_char(self.file_string,self.pos)

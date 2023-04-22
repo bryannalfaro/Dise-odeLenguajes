@@ -81,7 +81,7 @@ class PostfixConverter:
         #     postfix = ""
         # else:
         self.expression = Clear(self.expression,self.symbols).preprocess()
-        print('PREPROCESSED',self.expression)
+        #print('PREPROCESSED',self.expression)
         arr_preprocessed = self.expression
         #Iterate through the expression
         print(''.join(self.expression))
@@ -115,7 +115,7 @@ class PostfixConverter:
                     while len(self.stack_operators) != 0 and self.symbols[i].precedence <= self.symbols[self.stack_operators[-1]].precedence:
                         self.postfix_stack.append(self.stack_operators.pop())
                     self.stack_operators.append(i)
-            print("SALIR DEL FOR")
+            #print("SALIR DEL FOR")
         #Empty the stack
         while len(self.stack_operators) != 0:
 

@@ -1,4 +1,8 @@
 
+ID = 'Esto es un ID'
+NUMBER = 'Esto es un NUMBER'
+WS = 'Esto es un WS'
+
 import pickle
 #read the dfa
 with open('dfa', 'rb') as handle:
@@ -11,5 +15,9 @@ with open(input_file, 'r') as f:
 
 #simulate the dfa
 dfa.simulate_dfa(text)
+tokens  = dfa.get_identified()
+yal_tokens = dfa.get_list_tokens()
 
-            
+for i in tokens:
+    exec(i.definition)
+print("EOF")

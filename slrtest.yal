@@ -1,17 +1,25 @@
-(* Lexer para Gramática No. 1 - Expresiones aritméticas simples para variables
- sigo aqui*)
+(*
+ID = 'Esto es un ID'
+NUMBER = 'Esto es un NUMBER'
+WS = 'Esto es un WS'
+*)
 
-(* Introducir cualquier header aqui *)
+(* Lexer para Gramática No. 4 *)
 
-let delim = 'a'
-let delim2 = ['a'-'f']
-let letter = ['a'-'z']
+let delim = [' ''\t''\n']
+let ws = delim+
+let letter = ['A'-'Z''a'-'z']
+let str = ('_')*
 let digit = ['0'-'9']
+let digits = digit+
+let id = letter(letter|str|digit)*
+let number = digits('.'digits)?('E'['+''-']?digits)?
 
-rule gettoken =
-    delim2 { return DELIM2 }
-    | delim { return DELIM }
-    | letter
-    | digit
+rule tokens =
+    ws        {a=4
+print(WS,a)}
+  | id        {print(ID) }               (* Cambie por una acción válida, que devuelva el token *)
+  | number    {print(NUMBER) }
+  | '+'
 
 (* Introducir cualquier trailer aqui *)
