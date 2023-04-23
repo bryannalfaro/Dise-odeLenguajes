@@ -13,12 +13,18 @@ let digit = ['0'-'9']
 let digits = digit+
 let id = letter(letter|str|digit)*
 let number = digits('.'digits)?('E'['+''-']?digits)?
+let else = "else"
+let bryann = "Bryann"
 
 rule tokens =
     ws        {a=4
 print('el numero es',a)}
+  | "if"      {print("token IF") }
+  | else      {print("token ELSE") }
+  | bryann     {print("token BRYANN") }
   | id        {print(ID) }               (* Cambie por una acción válida, que devuelva el token *)
   | number    {print("token NUMBER") }
+
 
 (* Introducir cualquier trailer aqui *)
 

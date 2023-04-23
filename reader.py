@@ -32,6 +32,7 @@ class Reader():
         self.actual_tok = None
         self.errors = []
         self.isError = False
+        self.temp_name = ''
 
     def read_file(self):
         #read line by line
@@ -284,11 +285,17 @@ class Reader():
                 self.temp_array = []
             elif self.current_char == '{':
                 if self.isError == False:
-                    if self.current_string != '':
+                    if self.current_string != '' and self.temp_name == '': #No es al inicio que lo encuentra
                         self.token_name_i = self.current_string
-                        if self.token_name_i not in self.definitions.keys():
+                    elif self.temp_name != '':
+                        self.token_name_i = self.temp_name
+                        if self.token_name_i not in self.definitions.keys() and self.temp_name == '':
                             self.actual_tok.token = self.token_name_i
                             self.actual_tok.value = self.token_name_i
+                        elif self.temp_name != '':
+                            self.actual_tok.token = self.token_name_i
+                            self.actual_tok.value = self.current_string
+
                     self.actual_tok.definition = self.process_action()
                     #print('procese acction')
                     # else:
@@ -322,6 +329,8 @@ class Reader():
             #Caso encuentra un simbolo de regex
             elif self.current_char in self.symbols.keys():
                 self.current_string += self.current_char
+                if self.temp_name != '':
+                    self.temp_name += self.current_char
                 self.current_char = self.get_next_char(self.file_string,self.pos)
                 self.pos += 1
             #Caso encuentra una diferencia de charsets
@@ -351,15 +360,20 @@ class Reader():
                         self.pos += 1
                 if temp_word in self.definitions.keys(): #Es una variable definida previamente
                     #print('es una variable')
+                    if self.current_char == ' ' or self.current_char == '\n':
+                        self.actual_tok.token = temp_word
+                        self.current_string += self.definitions[temp_word]
+                        self.actual_tok.value = self.current_string
+                        self.rule_stack[self.token_name].append(self.current_string)
+                        self.token_name_i = temp_word
+                        temp_word = ''
+                        self.current_string = ''
+                        self.isError = False
+                    elif self.current_char != ' ':
+                        self.temp_name = temp_word
+                        self.current_string += self.definitions[temp_word]
 
-                    self.actual_tok.token = temp_word
-                    self.current_string += self.definitions[temp_word]
-                    self.actual_tok.value = self.current_string
-                    self.rule_stack[self.token_name].append(self.current_string)
-                    self.token_name_i = temp_word
-                    temp_word = ''
-                    self.current_string = ''
-                    self.isError = False
+
                     # self.current_char = self.get_next_char(self.file_string,self.pos)
                     # self.pos += 1
                 else: #Es una variable no definida
@@ -368,14 +382,24 @@ class Reader():
                     temp_word = ''
                     self.current_string = ''
                     self.isError = True
-        if self.current_string != '':
+        if self.current_string != '' and self.temp_name == '':
             if self.actual_tok.definition is None:
+                self.actual_tok.token = self.current_string
+                self.actual_tok.value = self.current_string
+            elif self.actual_tok.token is None and self.actual_tok.definition is not None:
                 self.actual_tok.token = self.current_string
                 self.actual_tok.value = self.current_string
             self.tokens_file.append(self.actual_tok)
             self.rule_stack[self.token_name].append(self.current_string)
 
             self.current_string = ''
+        elif self.temp_name != '':
+            self.actual_tok.token = self.temp_name
+            self.actual_tok.value = self.current_string
+            self.tokens_file.append(self.actual_tok)
+            self.rule_stack[self.token_name].append(self.current_string)
+            self.current_string = ''
+            self.temp_name = ''
         elif self.current_string == '' and self.actual_tok.token is not None:
             self.tokens_file.append(self.actual_tok)
             self.pos += 1
@@ -477,6 +501,7 @@ class Reader():
     #Metodo para evaluar una expresion con comillas dobles
     def evaluate_double(self,inside_list = False):
         self.coincidir('"')
+        self.temp_array = []
         text = ''
         while self.current_char != '"':
             if self.current_char == '\\' and self.get_next_char(self.file_string,self.pos) in self.valid_scapes:
@@ -620,6 +645,7 @@ class Reader():
                 self.pos += 1
             elif self.current_char == '\\' and self.get_next_char(self.file_string,self.pos) not in self.valid_scapes:
                 pass
+
             else:
                 text += self.current_char
                 #print('TEXT',text)
@@ -627,19 +653,24 @@ class Reader():
                 self.current_char = self.get_next_char(self.file_string,self.pos)
                 self.pos += 1
         #print('SALI DE EVALUAR SINGLE',text,ord(text))
-        if len(str(ord(text))) ==1:
-            text = '00'+str(ord(text))
-        elif len(str(ord(text))) == 2:
-            #print('SOY LEN 2')
-            text = '0'+str(ord(text))
-        else:
-            text = str(ord(text))
+        if len(text) >1:
+                #add error
+                self.errors.append('Error: Invalid single')
+                self.isError = True
+        if self.isError == False:
+            if len(str(ord(text))) ==1:
+                text = '00'+str(ord(text))
+            elif len(str(ord(text))) == 2:
+                #print('SOY LEN 2')
+                text = '0'+str(ord(text))
+            else:
+                text = str(ord(text))
 
-        if inside_list:
-            self.temp_array.append(text)
-        else:
-            self.current_string += '('+text+')'
-        #self.current_string += text
+            if inside_list:
+                self.temp_array.append(text)
+            else:
+                self.current_string += '('+text+')'
+            #self.current_string += text
         self.coincidir("'")
 
     #Metodo para evaluar comentario

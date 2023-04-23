@@ -16,12 +16,11 @@ let digits = digit+
 let number = digits('.'digits)?('E'['+''-']?digits)?
 
 rule tokens =
-    ws        { print(WHITESPACE) }               (* Cambie por una acción válida, que devuelva el token *)
-  | number    { print(NUMBER) }
-  | '+'       { print(PLUS) }
-  | '*'       { print(TIMES) }
-  | '('       { print(LPAREN) }
-  | ')'
+    '+' { print('plus') }
+    | ws
+    | digit { print('digit') }
+
+
 
 (* Introducir cualquier trailer aqui *)
 (*print('EOF')*)

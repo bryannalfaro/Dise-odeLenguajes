@@ -153,7 +153,8 @@ class Node():
                 self.label_leaf = Node.counter_leaf
                 if self.value == Symbol('#').name:
                     print(
-                     'counter_hash: ',Node.counter_hash
+                     'counter_hash: ',Node.counter_hash,
+                     "tokens list: ",Node.tokens_list[Node.counter_hash].token,
                     )
                     Node.tokens_list[Node.counter_hash].id_leaf = self.label_leaf
                     Node.counter_hash+=1

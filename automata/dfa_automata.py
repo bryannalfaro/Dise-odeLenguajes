@@ -66,7 +66,7 @@ class DFA_automata(Automata):
 
         #check the last acceptance state if it is not empty
         if last_acceptance_state != None:
-            print('LEAF LAST',last_acceptance_state.leaf_id)
+            #print('LEAF LAST',last_acceptance_state.leaf_id)
             self.search_idx(last_acceptance_state.leaf_id)
 
     def search_idx(self,leaf_id):

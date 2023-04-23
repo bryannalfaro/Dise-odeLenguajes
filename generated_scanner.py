@@ -1,5 +1,5 @@
 
-PLUS = "PLUS"
+ID = 'ID'
 
 import pickle
 #read the dfa
@@ -24,4 +24,4 @@ for i in tokens:
             exec(i.definition.strip())
         else:
             print('NO DEFINITION',i.token)
-print('eof')
+print("fin del archivo") 
