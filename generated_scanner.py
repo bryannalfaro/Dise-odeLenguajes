@@ -22,4 +22,4 @@ for i in tokens:
             exec(i.definition.strip())
         else:
             print('NO DEFINITION',i.token)
-print('EOF')
+print('eof')

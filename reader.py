@@ -1,3 +1,4 @@
+from termcolor import colored
 from alphabet_definition import *
 import string
 from operators import *
@@ -43,7 +44,7 @@ class Reader():
             self.process_file()
             if len(self.errors) > 0:
                 for error in self.errors:
-                    print(error)
+                    print(colored(error,'red'))
                 return False
             else:
                 print('MEGA STRING',self.file_string)

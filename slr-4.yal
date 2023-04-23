@@ -23,7 +23,7 @@ rule tokens =
   | '+'       { print(PLUS) }
   | '-'       { print(MINUS) }
   | '*'       { print(TIMES) }
-  | '/'       { print(DIV) }
+  | '/'       { print('DIV') }
   | '('       { print(LPAREN) }
   | ')'       { print(RPAREN) }
 
