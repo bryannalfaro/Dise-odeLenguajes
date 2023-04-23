@@ -1,13 +1,15 @@
 (*
 PLUS = "PLUS"
 *)
-	let delim = 'a'
+	let delim = [' ' '\t' '\n']
  let ws = delim+
 let letter = ['A'-'T''a'-'t']
 let if = "if"
 let else = "else"
 let digit = ["0123456789"]
    let id = letter (letter | digit)*
+let if = "if"
+let else = "else"
 
 rule tokens =
     | ws
@@ -15,6 +17,8 @@ rule tokens =
     | if    { print('IF SOY YO') }
 	| id  { print('ID') }
     | digit+ {print('digit+')}
+    | '='
+    | '+' { print('PLUS') }
 
 
 (* Introducir cualquier trailer aqui *)

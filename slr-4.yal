@@ -1,6 +1,4 @@
-(*
-ID = 'ID'
-*)
+(* from definitions import * *)
 (* Lexer para Gramática No. 4 *)
 
 (* Introducir cualquier header aqui *)
@@ -13,18 +11,21 @@ let digit = ['0'-'9']
 let digits = digit+
 let id = letter(letter|str|digit)*
 let number = digits('.'digits)?('E'['+''-']?digits)?
-let else = "else"
-let bryann = "Bryann"
 
 rule tokens =
-    ws        {a=4
-print('el numero es',a)}
-  | "if"      {print("token IF") }
-  | else      {print("token ELSE") }
-  | bryann     {print("token BRYANN") }
-  | id        {print(ID) }               (* Cambie por una acción válida, que devuelva el token *)
-  | number    {print("token NUMBER") }
-
+    ws
+  | id        { print(ID) }               (* Cambie por una acción válida, que devuelva el token *)
+  | number    { print(NUMBER) }
+  | ';'       { print(SEMICOLON) }
+  | ":="      { print(ASSIGNOP) }
+  | '<'       {print(LT) }
+  | '='       { print('EQUAL') }
+  | '+'       { print(PLUS) }
+  | '-'       { print(MINUS) }
+  | '*'       { print(TIMES) }
+  | '/'       { print(DIV) }
+  | '('       { print(LPAREN) }
+  | ')'       { print(RPAREN) }
 
 (* Introducir cualquier trailer aqui *)
 

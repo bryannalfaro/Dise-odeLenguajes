@@ -9,7 +9,8 @@ validate =False
 State.counter = 0
 
 #read file
-reader = Reader('slr-4.yal')
+yal_file = input('Enter the file to read: ')
+reader = Reader(yal_file)
 flag  = reader.read_file()
 
 if flag == False:

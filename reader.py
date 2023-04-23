@@ -207,7 +207,7 @@ class Reader():
                 self.current_char = self.get_next_char(self.file_string,self.pos)
                 self.pos += 1
             #Caso es un simbolo de regex
-            elif self.current_char in self.symbols.keys():
+            elif self.current_char in self.symbols.keys() and self.current_char != Concatenation().symbol:
                 self.current_string += self.current_char
                 self.current_char = self.get_next_char(self.file_string,self.pos)
                 self.pos += 1
@@ -233,7 +233,7 @@ class Reader():
             #Es una palabra
             else:
                 temp_word = ''
-                while self.current_char != "'" and self.current_char != '\n' and self.current_char not in self.symbols.keys() and self.current_char != '[' and self.current_char != '"' and self.current_char != ' ' and self.current_char != ' ' and self.current_char != None:
+                while self.current_char != "'" and self.current_char != '\n' and (self.current_char not in self.symbols.keys() or self.current_char == Concatenation().symbol) and self.current_char != '[' and self.current_char != '"' and self.current_char != ' '  and self.current_char != None:
                     temp_word += self.current_char
                     self.current_char = self.get_next_char(self.file_string,self.pos)
                     self.pos += 1
@@ -327,7 +327,7 @@ class Reader():
                 self.current_char = self.get_next_char(self.file_string,self.pos)
                 self.pos += 1
             #Caso encuentra un simbolo de regex
-            elif self.current_char in self.symbols.keys():
+            elif self.current_char in self.symbols.keys() and self.current_char != Concatenation().symbol:
                 self.current_string += self.current_char
                 if self.temp_name != '':
                     self.temp_name += self.current_char
@@ -353,7 +353,7 @@ class Reader():
             #Es una variable
             else:
                 temp_word = ''
-                while self.current_char != "'" and self.current_char not in self.symbols.keys() and self.current_char != '[' and self.current_char != '"' and self.current_char != ' ' and self.current_char != '\n':
+                while self.current_char != "'" and (self.current_char not in self.symbols.keys() or self.current_char != Concatenation().symbol) and self.current_char != '[' and self.current_char != '"' and self.current_char != ' ' and self.current_char != '\n':
                     if self.current_char not in self.symbols.keys():
                         temp_word += self.current_char
                         self.current_char = self.get_next_char(self.file_string,self.pos)
@@ -460,6 +460,9 @@ class Reader():
                 self.evaluate_double(True)
             elif self.current_char == '^':
                 negative = True #Si es una negacion se debe restar de todo el ascii
+                self.current_char = self.get_next_char(self.file_string,self.pos)
+                self.pos += 1
+            else:
                 self.current_char = self.get_next_char(self.file_string,self.pos)
                 self.pos += 1
 
@@ -699,7 +702,7 @@ class Reader():
             self.coincidir('(')
             self.comment_inside += self.current_char
             self.coincidir('*')
-            while self.current_char != '*' and self.get_next_char(self.file_string,self.pos) != ')':
+            while self.current_char != '*' or self.get_next_char(self.file_string,self.pos) != ')':
                 self.comment_inside += self.current_char
                 self.current_char = self.get_next_char(self.file_string,self.pos)
                 self.pos += 1

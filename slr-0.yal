@@ -1,3 +1,4 @@
+(* from definitions import * *)
 	let delim = [' ''\t''\n']
  let ws = delim+
 let letter = ['A'-'Z''a'-'z']
@@ -6,18 +7,20 @@ let digit = ["0123456789"]
    let id = letter (letter | digit)*
 
 rule tokens =
-    ws  {
-				if t.value = 0: return  ID
-				else:
-					return NONE
+    ws  {print('NONE')}
+
+	| id  {
+if 0 == 0: print(ID)
+else:
+	print('NONE')
 
 	}         (* Cambie por una acción válida, que devuelva el token *)
 
-	| id  (* Cambie por una acción válida, que devuelva el token *)
-	| '+'       { return PLUS }
-  	| '*'       { return TIMES }
-  	| '('       { return LPAREN }
-  	| ')'       { return RPAREN }
-	| "*)"		 { return STARTCOMMENT }
+	| '+'       { print(PLUS) }
+  	| '*'       { print(TIMES) }
+  	| '('       { print(LPAREN) }
+  	| ')'       { print(RPAREN) }
+	| "*)"		 { print(STARTCOMMENT) }
 
-(* Introducir cualquier trailer aqui*)
+(* Introducir cualquier trailer aqui *)
+(* print('eof') *)

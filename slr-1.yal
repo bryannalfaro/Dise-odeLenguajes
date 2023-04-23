@@ -1,3 +1,4 @@
+(* from definitions import * *)
 (* Lexer para Gramática No. 1 - Expresiones aritméticas simples para variables *)
 
 (* Introducir cualquier header aqui *)
@@ -10,10 +11,11 @@ let id = letter(letter|digit)*
 
 rule tokens =
     ws
-  | id        { print('encontre token') }               (* Cambie por una acción válida, que devuelva el token *)
-  | '+'       { print('encontre token') }
-  | '*'       { print('encontre token') }
-  | '('       { print('encontre token') }
-  | ')'       { print('encontre token') }
+  | id        { print(ID) }               (* Cambie por una acción válida, que devuelva el token *)
+  | '+'       { print(PLUS) }
+  | '*'       { print(TIMES) }
+  | '('       { print(LPAREN) }
+  | ')'       { print(RPAREN)}
 
 (* Introducir cualquier trailer aqui *)
+(* print('EOF')*)

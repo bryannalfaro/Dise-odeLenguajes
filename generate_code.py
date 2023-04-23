@@ -8,7 +8,7 @@ class GeneratingScanner():
     def build_scanner(self):
         with open(self.name_file,'w') as f:
             if self.header is not None:
-                f.write(self.header)
+                f.write(self.header.strip())
             f.write('''
 import pickle
 #read the dfa
@@ -36,5 +36,5 @@ for i in tokens:
 ''')
             if self.trailer is not None:
                 f.write(
-self.trailer
+self.trailer.strip()
                 )

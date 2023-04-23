@@ -1,6 +1,4 @@
-
-ID = 'ID'
-
+from definitions import *
 import pickle
 #read the dfa
 with open('dfa', 'rb') as handle:
@@ -24,4 +22,4 @@ for i in tokens:
             exec(i.definition.strip())
         else:
             print('NO DEFINITION',i.token)
-print("fin del archivo") 
+print('EOF')

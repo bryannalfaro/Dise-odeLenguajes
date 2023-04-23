@@ -1,3 +1,4 @@
+(* from definitions import * *)
 (* Lexer para Gramática No. 2 - Expresiones aritméticas extendidas *)
 
 (* Introducir cualquier header aqui *)
@@ -8,17 +9,19 @@ let letter = ['A'-'Z''a'-'z']
 let digit = ['0'-'9']
 let digits = digit+
 let id = letter(letter|digit)*
-let number = digits('.'digits)?('E'['+''-']?digits)?
+let number = digits(.digits)?('E'['+''-']?digits)?
 
 rule tokens =
-    ws        { return WHITESPACE }               (* Cambie por una acción válida, que devuelva el token *)
-  | id        { return ID }
-  | number    { return NUMBER }
-  | '+'       { return PLUS }
-  | '-'       { return MINUS }
-  | '*'       { return TIMES }
-  | '/'       { return DIV }
-  | '('       { return LPAREN }
-  | ')'       { return RPAREN }
+    ws        { print(WS) }               (* Cambie por una acción válida, que devuelva el token *)
+  | id        { print(ID) }
+  | number    { print(NUMBER) }
+  | '+'       { print(PLUS) }
+  | '-'       { print(MINUS) }
+  | '*'       { print(TIMES) }
+  | '/'       { print(DIV) }
+  | '('       { print(LPAREN) }
+  | ')'       { print(RPAREN) }
+  | '='
 
 (* Introducir cualquier trailer aqui *)
+(* print('EOF')*)
