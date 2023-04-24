@@ -8,7 +8,6 @@ let digit = ["0123456789"]
 
 rule tokens =
     ws  {print('NONE')}
-
 	| id  {
 if 0 == 0: print(ID)
 else:

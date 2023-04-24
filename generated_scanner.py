@@ -1,4 +1,6 @@
-from definitions import *
+ID = 'Esto es un ID'
+NUMBER = 'Esto es un NUMBER'
+WS = 'Esto es un WS'
 import pickle
 #read the dfa
 with open('dfa', 'rb') as handle:
@@ -22,4 +24,4 @@ for i in tokens:
             exec(i.definition.strip())
         else:
             print('NO DEFINITION',i.token)
-print('eof')
+print("EOF")
