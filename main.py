@@ -2,12 +2,18 @@ from expr_postfix import PostfixConverter
 from state_definition import State
 from automata.tree import Tree
 from reader import Reader
+from reader_parser import Reader_Parser
 import pickle
 from generate_code import GeneratingScanner
 #initialize alphabet
 validate =False
 State.counter = 0
 
+#read parser file
+yapar_file = input('Enter the file to read: ')
+reader_parser = Reader_Parser(yapar_file)
+reader_parser.read()
+input()
 #read file
 yal_file = input('Enter the file to read: ')
 reader = Reader(yal_file)
