@@ -13,6 +13,10 @@ class Reader_Parser():
         self.current_string = ''
         self.header = ''
         self.counter_increment = 0
+        self.processing_production = False
+        self.ignored_tokens = []
+        self.productions_list = {}
+        self.actual_prod = ''
 
 
 
@@ -22,17 +26,21 @@ class Reader_Parser():
             self.file_string += line
         self.process_file()
         file.close()
-        print(self.file_string)
+        #print(self.file_string)
         print('COMMENTS: ',self.comments)
+        print('TOKENS: ',self.tokens)
+        #Ignored
+        print('IGNORED: ',self.ignored_tokens)
+        print('RULES: ',self.rules)
+        print('PRODUCTIONS: ',self.productions_list)
 
     def process_file(self):
         #Recorrer string
         i = 0
         while i < len(self.file_string):
             self.current_char = self.file_string[i]
-            if self.processing_tokens:
-                self.actual_tok = None
-                self.process_token()
+            if self.processing_production:
+                self.productions()
                 i = self.pos
             else:
                 #Caso en que se encuentre un comentario
@@ -41,25 +49,115 @@ class Reader_Parser():
                     self.comments.append(self.current_string)
                     self.current_string = ''
                 #Caso en que se encuentre un let
-                elif self.current_char == 'l' and self.get_next_char(self.file_string,self.pos) == 'e' and self.get_next_char(self.file_string,self.pos + 1) == 't' and self.get_next_char(self.file_string,self.pos + 2) == ' ':
-                    self.process_definition()
-                #Caso en que se encuentre un rule
-                elif self.current_char == 'r' and self.get_next_char(self.file_string,self.pos) == 'u' and self.get_next_char(self.file_string,self.pos+1) == 'l' and self.get_next_char(self.file_string,self.pos+2) == 'e':
-                    self.process_rule()
-                    self.processing_tokens = True
-                # if self.current_char == '{':
-                #     self.header = self.process_action(False)
+                elif self.current_char == '%' and self.get_next_char(self.file_string,self.pos) == 't' and self.get_next_char(self.file_string,self.pos+1) == 'o' and self.get_next_char(self.file_string,self.pos+2) == 'k' and self.get_next_char(self.file_string,self.pos+3) == 'e' and self.get_next_char(self.file_string,self.pos+4) == 'n':
+                    self.process_token()
                 elif self.current_char == '\n' or self.current_char == ' ' or self.current_char == '\t':
                     pass
+                #IGNORE
+                elif self.current_char == 'I' and self.get_next_char(self.file_string,self.pos) == 'G' and self.get_next_char(self.file_string,self.pos+1) == 'N' and self.get_next_char(self.file_string,self.pos+2) == 'O' and self.get_next_char(self.file_string,self.pos+3) == 'R' and self.get_next_char(self.file_string,self.pos+4) == 'E':
+                    self.process_ignore()
+                elif self.current_char == '%' and self.get_next_char(self.file_string,self.pos) == '%':
+                    self.processing_production = True
+                    self.current_char = self.get_next_char(self.file_string,self.pos)
+                    self.pos += 1
                 else:
                     self.errors.append('ERROR: Invalid syntax')
                     #ignore until the end of the line
                     while self.current_char != '\n':
                         self.current_char = self.get_next_char(self.file_string,self.pos)
                         self.pos += 1
-
                 self.pos += 1
                 i = self.pos
+
+    def productions(self):
+        while self.current_char != '\n' and self.current_char !=  None:
+            if self.current_char == '/' and self.get_next_char(self.file_string,self.pos) == '*':
+                self.comment()
+                self.comments.append(self.current_string)
+                self.current_string = ''
+            elif self.current_char == ':':
+                #add to dictionary
+                self.actual_prod = self.current_string
+                self.productions_list[self.current_string] = []
+                self.process_production()
+            else:
+                self.current_string += self.current_char
+            self.current_char = self.get_next_char(self.file_string,self.pos)
+            self.pos += 1
+        self.pos += 1
+
+
+    def process_production(self):
+        #consume until find ;
+        self.current_string = ''
+        self.coincidir(':')
+        while self.current_char != ';':
+            if self.current_char == '|':
+                self.productions_list[self.actual_prod].append(self.current_string)
+                self.current_string = ''
+                self.current_char = self.get_next_char(self.file_string,self.pos)
+                self.pos += 1
+            elif self.current_char == '\n':
+                self.current_char = self.get_next_char(self.file_string,self.pos)
+                self.pos += 1
+            else:
+                self.current_string += self.current_char
+                self.current_char = self.get_next_char(self.file_string,self.pos)
+                self.pos += 1
+        self.productions_list[self.actual_prod].append(self.current_string)
+        self.current_string = ''
+
+
+
+    def process_ignore(self):
+        self.coincidir('I')
+        self.coincidir('G')
+        self.coincidir('N')
+        self.coincidir('O')
+        self.coincidir('R')
+        self.coincidir('E')
+        self.coincidir(' ')
+        self.process_ignore_sentence()
+
+    def process_ignore_sentence(self):
+        while self.current_char != '\n' and self.current_char != None:
+            if self.current_char == ' ':
+                #clean string and read other token
+                self.ignored_tokens.append(self.current_string)
+                self.current_string = ''
+                self.current_char = self.get_next_char(self.file_string,self.pos)
+                self.pos += 1
+            else:
+                self.current_string += self.current_char
+                self.current_char = self.get_next_char(self.file_string,self.pos)
+                self.pos += 1
+        self.ignored_tokens.append(self.current_string)
+        self.current_string = ''
+
+    def process_token(self):
+        self.coincidir('%')
+        self.coincidir('t')
+        self.coincidir('o')
+        self.coincidir('k')
+        self.coincidir('e')
+        self.coincidir('n')
+        self.coincidir(' ')
+        self.process_name()
+
+    def process_name(self):
+        while self.current_char != '\n' and self.current_char != None:
+            if self.current_char == ' ':
+                #clean string and read other token
+                self.tokens.append(self.current_string)
+                self.current_string = ''
+                self.current_char = self.get_next_char(self.file_string,self.pos)
+                self.pos += 1
+            else:
+                self.current_string += self.current_char
+                self.current_char = self.get_next_char(self.file_string,self.pos)
+                self.pos += 1
+        self.tokens.append(self.current_string)
+        self.current_string = ''
 
     #Metodo para evaluar comentario
     def comment(self, init=True):
