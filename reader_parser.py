@@ -1,5 +1,8 @@
 class Reader_Parser():
-    def __init__(self,path):
+    def __init__(self,path,yalex_tokens):
+        self.yalex_tokens = yalex_tokens
+        self.yalex_values = []
+        self.get_tok_values()
         self.path = path
         self.file_string = ''
         self.current_char = ''
@@ -19,20 +22,28 @@ class Reader_Parser():
         self.actual_prod = ''
 
 
-
+    def get_tok_values(self):
+        for i in self.yalex_tokens:
+            self.yalex_values.append(i.token)
+        print('YALEX VALUES',self.yalex_values)
     def read(self):
         file = open(self.path, "r")
         for line in file:
             self.file_string += line
         self.process_file()
         file.close()
-        #print(self.file_string)
-        print('COMMENTS: ',self.comments)
-        print('TOKENS: ',self.tokens)
-        #Ignored
-        print('IGNORED: ',self.ignored_tokens)
-        print('RULES: ',self.rules)
-        print('PRODUCTIONS: ',self.productions_list)
+        if len(self.errors) > 0:
+            print('ERRORS: ',self.errors)
+            return False
+        else:
+            #print(self.file_string)
+            print('COMMENTS: ',self.comments)
+            print('TOKENS: ',self.tokens)
+            #Ignored
+            print('IGNORED: ',self.ignored_tokens)
+            print('RULES: ',self.rules)
+            print('PRODUCTIONS: ',self.productions_list)
+            return True
 
     def process_file(self):
         #Recorrer string
@@ -40,6 +51,8 @@ class Reader_Parser():
         while i < len(self.file_string):
             self.current_char = self.file_string[i]
             if self.processing_production:
+                #validate if the tokens are in yalex_tokens
+
                 self.productions()
                 i = self.pos
             else:
@@ -57,6 +70,12 @@ class Reader_Parser():
                 elif self.current_char == 'I' and self.get_next_char(self.file_string,self.pos) == 'G' and self.get_next_char(self.file_string,self.pos+1) == 'N' and self.get_next_char(self.file_string,self.pos+2) == 'O' and self.get_next_char(self.file_string,self.pos+3) == 'R' and self.get_next_char(self.file_string,self.pos+4) == 'E':
                     self.process_ignore()
                 elif self.current_char == '%' and self.get_next_char(self.file_string,self.pos) == '%':
+                    for token in self.tokens:
+                        print('TOKEN',token)
+                        #IF TOKEN IS NOT IN YALEX TOKENS.value
+                        if token not in self.yalex_values:
+                            print("here ",token)
+                            self.errors.append(f'ERROR: Token {token} not found in yalex tokens')
                     self.processing_production = True
                     self.current_char = self.get_next_char(self.file_string,self.pos)
                     self.pos += 1

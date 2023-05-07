@@ -9,11 +9,6 @@ from generate_code import GeneratingScanner
 validate =False
 State.counter = 0
 
-#read parser file
-yapar_file = input('Enter the file to read: ')
-reader_parser = Reader_Parser(yapar_file)
-reader_parser.read()
-input()
 #read file
 yal_file = input('Enter the file to read: ')
 reader = Reader(yal_file)
@@ -23,6 +18,20 @@ if flag == False:
     print('Error reading file')
     exit()
 expression = reader.get_tokens_expression()
+
+#read parser file
+yapar_file = input('Enter the file to read: ')
+reader_parser = Reader_Parser(yapar_file,reader.tokens_file)
+flag = reader_parser.read()
+
+if flag == False:
+    print('Error reading file')
+    exit()
+
+print("LOS TOKENS SI COINCIDEN")
+
+input()
+
 
 a = input("Enter to continue...") #solo para la siguiente
 print('----------------------------------------')
