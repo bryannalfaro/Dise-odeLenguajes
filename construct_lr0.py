@@ -15,13 +15,6 @@ class ConstructLR():
 
         self.J_results = []
 
-        # state = State()
-        # state.list = [self.expanded_productions[4]]
-        # self.closure(state.list)
-        # self.goto(state.list,'factor')
-
-        print('sali')
-
     #make the productions
     def make_productions(self):
         for production in self.yalex_productions:
@@ -30,10 +23,10 @@ class ConstructLR():
                 right = right_item.strip()
                 self.productions.append(Production(left,right))
 
-        #print every production with his left and right
-        for production in self.productions:
-             print('PRODUCTION')
-             print(production.left,'-->',production.right)
+        # #print every production with his left and right
+        # for production in self.productions:
+        #      print('PRODUCTION')
+        #      print(production.left,'-->',production.right)
 
         #get the gramatical elements
         for production in self.productions:
@@ -60,7 +53,7 @@ class ConstructLR():
         #     print(i)
 
 
-
+    #Function to add the dot and the augmented production
     def expand_production(self):
         #add the first production to expanded production
         self.expanded_productions.append(Production(self.productions[0].left+"'",self.productions[0].left))
@@ -75,8 +68,8 @@ class ConstructLR():
         for i in range(len(self.expanded_productions)):
             self.expanded_productions[i].right = '. '+self.expanded_productions[i].right
 
-        for i in self.expanded_productions:
-             print('expanded',i.left,'-->',i.right)
+        # for i in self.expanded_productions:
+        #      print('expanded',i.left,'-->',i.right)
 
     #Construct the closure for LR0 automata
     def closure(self, state):
@@ -87,7 +80,6 @@ class ConstructLR():
         while change:
             append = False
             change = False
-
 
             for i in range(len(self.J_results)):
                     #iterate until find . and then save the word
@@ -124,7 +116,7 @@ class ConstructLR():
                             if change:
                                 self.J_results.append(production)
                                 change = True
-                                append = True
+                                append = True #There is still elements to evaluate in the array
                             # else:
                             #     for i in range(len(self.J_results)):
                             #         if self.J_results[i].is_eval == False:
@@ -133,22 +125,20 @@ class ConstructLR():
                 change = True
 
         #print('vines')
-        for i in self.J_results:
-            print(i.left,'-->',i.right)
+        # for i in self.J_results:
+        #     print(i.left,'-->',i.right)
         #sleep(10)
         return self.J_results
 
+    #function to move the dot
     def move_dot(self, right):
         array  = []
-        #make the string an array in for loop
         #while to save workd and add to the array
         count = 0
         flag = False
         word = ''
         index_dot = None
-        #print('RIGHT',right)
         while count < len(right):
-            #print(word,right[count])
             if right[count] == ' ' and word != '':
                 if word == '.':
                     index_dot = len(array)
@@ -173,6 +163,7 @@ class ConstructLR():
                 string += i
         #print('ARRAY',string)
         return string
+
     #function to handle the goto of lor0
     def goto(self, state, symbol):
         #make a list to store the productions
@@ -204,10 +195,12 @@ class ConstructLR():
                     new= Production(production.left,self.move_dot(production.right))
                     new.is_closure = True
                     goto_list.append(new)
-        #make the closure of the goto_list
+
         #print('GOTO LIST before closure')
         # for i in goto_list:
         #     print(i.left,'-->',i.right)
+
+        #make the closure of the goto_list
         goto_list = self.closure(goto_list)
         #print('GOTO LIST')
         # for i in goto_list:
@@ -234,10 +227,6 @@ class ConstructLR():
                     for symbol in self.gramatical_elements:
                         #print('Symbol ',symbol)
                         goto = self.goto(state.list,symbol)
-                        #print('GOTO IN AUTOMATA')
-                        # for i in goto:
-                        #     print(i.left,'-->',i.right)
-                        # sleep(1)
 
                         if goto != None and goto != []:
                             #print('STATE 1 AND STATE 2',state.name,new_state.name,state.list,new_state.list)
@@ -256,29 +245,12 @@ class ConstructLR():
                                 if state not in transitions:
                                     transitions[state] = {}
                                 transitions[state][symbol] = new_state
-                                #print the state and the new state
-                                # print('STATE')
-                                # for i in state.list:
-                                #     print(i.left,'-->',i.right)
-                                # print('NEW STATE')
-                                # for i in new_state.list:
-                                #     print(i.left,'-->',i.right)
-                                # print('TRANSITION')
-                                # print(transitions)
                                 change = True
                             else:
                                 #add the transition to itself
                                 if state not in transitions:
                                     transitions[state] = {}
                                 transitions[state][symbol] = new_state
-                                # print('STATE')
-                                # for i in state.list:
-                                #     print(i.left,'-->',i.right)
-                                # print('NEW STATE')
-                                # for i in new_state.list:
-                                #     print(i.left,'-->',i.right)
-                                # print('TRANSITION')
-                                # print(transitions)
                                 is_double = False
                                 change = True
 

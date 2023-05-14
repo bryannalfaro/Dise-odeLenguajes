@@ -38,8 +38,9 @@ automata = automata.make_automata()
 automata.visualization()
 input()
 
-
-
+'''
+THIS PART IS FOR THE DFA DIRECT
+'''
 a = input("Enter to continue...") #solo para la siguiente
 print('----------------------------------------')
 
