@@ -31,9 +31,9 @@ class ConstructLR():
                 self.productions.append(Production(left,right))
 
         #print every production with his left and right
-        # for production in self.productions:
-        #     print('PRODUCTION')
-        #     print(production.left,'-->',production.right)
+        for production in self.productions:
+             print('PRODUCTION')
+             print(production.left,'-->',production.right)
 
         #get the gramatical elements
         for production in self.productions:
@@ -75,54 +75,67 @@ class ConstructLR():
         for i in range(len(self.expanded_productions)):
             self.expanded_productions[i].right = '. '+self.expanded_productions[i].right
 
-        # for i in self.expanded_productions:
-        #     print('expanded',i.left,'-->',i.right)
+        for i in self.expanded_productions:
+             print('expanded',i.left,'-->',i.right)
 
     #Construct the closure for LR0 automata
     def closure(self, state):
+
         self.J_results = state #lista de objetos tipo Production
         #recorrer y encontrar el punto seguido de un no terminal
         change = True
         while change:
+            append = False
             change = False
+
+
             for i in range(len(self.J_results)):
-                #iterate until find . and then save the word
-                word = ''
-                count = 0
-                flag = False
-                #iterate until find . and then save the word
-                while count < len(self.J_results[i].right):
-                    if flag:
-                        if self.J_results[i].right[count] == ' ':
-                            flag = False
-                        else:
-                            word += self.J_results[i].right[count]
-                    if self.J_results[i].right[count] == '.':
-                        flag = True
-                        if self.J_results[i].right[count+1] == ' ':
-                            count += 1
-                    count += 1
-                #print('WORD',word)
-
-                #search in productions where the left is the word
-                for production in self.expanded_productions:
-                    if production.left == word:
-                        #check if the production .left is not in the J_results left
-                        for i in range(len(self.J_results)):
-                            if production == self.J_results[i]:
-                                change = False
-                                break
+                    #iterate until find . and then save the word
+                    word = ''
+                    count = 0
+                    flag = False
+                    #iterate until find . and then save the word
+                    while count < len(self.J_results[i].right):
+                        if flag:
+                            if self.J_results[i].right[count] == ' ':
+                                flag = False
                             else:
+                                word += self.J_results[i].right[count]
+                        if self.J_results[i].right[count] == '.':
+                            flag = True
+                            if self.J_results[i].right[count+1] == ' ':
+                                count += 1
+                        count += 1
+                    #print('WORD',word)
+
+                    #search in productions where the left is the word
+                    for production in self.expanded_productions:
+                        if production.left == word:
+                            #check if the production .left is not in the J_results left
+                            for j in range(len(self.J_results)):
+                                if production == self.J_results[j]:
+                                    change = False
+                                    break
+                                else:
+                                    change = True
+
+
+
+                            if change:
+                                self.J_results.append(production)
                                 change = True
+                                append = True
+                            # else:
+                            #     for i in range(len(self.J_results)):
+                            #         if self.J_results[i].is_eval == False:
+                            #             change = True
+            if append:
+                change = True
 
-
-
-                        if change:
-                            self.J_results.append(production)
-                            change = True
         #print('vines')
-        # for i in self.J_results:
-        #     print(i.left,'-->',i.right)
+        for i in self.J_results:
+            print(i.left,'-->',i.right)
+        #sleep(10)
         return self.J_results
 
     def move_dot(self, right):
@@ -189,6 +202,7 @@ class ConstructLR():
                 if word == symbol:
                     #print('here')
                     new= Production(production.left,self.move_dot(production.right))
+                    new.is_closure = True
                     goto_list.append(new)
         #make the closure of the goto_list
         #print('GOTO LIST before closure')
@@ -203,7 +217,9 @@ class ConstructLR():
 
     def make_automata(self):
         initial_state = State(is_initial=True)
-        initial_state.list = self.closure([self.expanded_productions[0]])
+        initial_prod = self.expanded_productions[0]
+        initial_prod.is_closure = True
+        initial_state.list = self.closure([initial_prod])
         C_group = []
         transitions = {}
         C_group.append(initial_state)

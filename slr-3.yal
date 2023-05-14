@@ -4,18 +4,23 @@
 (* Introducir cualquier header aqui *)
 
 let delim = [' ''\t''\n']
-let ws = delim+
+let WS = delim+
 let digit = ["0123456789"]
 let digits = digit+
-let number = digits('.'digits)?('E'['+''-']?digits)?
+let NUMBER = digits('.'digits)?('E'['+''-']?digits)?
+let PLUS = '+'
+let TIMES = '*'
+let LPAREN = '('
+let RPAREN = ')'
+
 
 rule tokens =
-    ws        { print(WS) }               (* Cambie por una acción válida, que devuelva el token *)
-  | number    { print(NUMBER) }
-  | '+'       { print(PLUS) }
-  | '*'       { print(TIMES) }
-  | '('       { print(LPAREN) }
-  | ')'       { print(RPAREN)}
+    WS        { print(WS) }               (* Cambie por una acción válida, que devuelva el token *)
+  | NUMBER    { print(NUMBER) }
+  | PLUS       { print(PLUS) }
+  | TIMES       { print(TIMES) }
+  | LPAREN       { print(LPAREN) }
+  | RPAREN       { print(RPAREN)}
 
 (* Introducir cualquier trailer aqui *)
 (*print('EOF')*)

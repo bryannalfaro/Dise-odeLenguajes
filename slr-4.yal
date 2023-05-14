@@ -4,28 +4,39 @@
 (* Introducir cualquier header aqui *)
 
 let delim = [' ''\t''\n']
-let ws = delim+
+let WS = delim+
 let letter = ['A'-'Z''a'-'z']
 let str = ('_')*
 let digit = ['0'-'9']
 let digits = digit+
-let id = letter(letter|str|digit)*
-let number = digits('.'digits)?('E'['+''-']?digits)?
+let ID = letter(letter|str|digit)*
+let NUMBER = digits('.'digits)?('E'['+''-']?digits)?
+let SEMICOLON = ';'
+let ASSIGNOP = ":="
+let LT = '<'
+let EQ = '='
+let PLUS = '+'
+let MINUS = '-'
+let TIMES = '*'
+let DIV = '/'
+let LPAREN = '('
+let RPAREN = ')'
+
 
 rule tokens =
-    ws
-  | id        { print(ID) }               (* Cambie por una acción válida, que devuelva el token *)
-  | number    { print(NUMBER) }
-  | ';'       { print(SEMICOLON) }
-  | ":="      { print(ASSIGNOP) }
-  | '<'       {print(LT) }
-  | '='       { print('EQUAL') }
-  | '+'       { print(PLUS) }
-  | '-'       { print(MINUS) }
-  | '*'       { print(TIMES) }
-  | '/'       { print('DIV') }
-  | '('       { print(LPAREN) }
-  | ')'       { print(RPAREN) }
+    WS
+  | ID        { print(ID) }               (* Cambie por una acción válida, que devuelva el token *)
+  | NUMBER    { print(NUMBER) }
+  | SEMICOLON       { print(SEMICOLON) }
+  | ASSIGNOP      { print(ASSIGNOP) }
+  | LT      {print(LT) }
+  | EQ       { print('EQUAL') }
+  | PLUS       { print(PLUS) }
+  | MINUS       { print(MINUS) }
+  | TIMES       { print(TIMES) }
+  | DIV       { print('DIV') }
+  | LPAREN       { print(LPAREN) }
+  | RPAREN       { print(RPAREN) }
 
 (* Introducir cualquier trailer aqui *)
 

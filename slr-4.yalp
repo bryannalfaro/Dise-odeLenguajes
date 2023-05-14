@@ -54,10 +54,10 @@ q:
   | SEMICOLON m
 ;
 m:
-    a
+  a
 ;
 a:
-    ID ASSIGNOP e
+  ID ASSIGNOP e
 ;
 e:
     x z
@@ -66,6 +66,7 @@ e:
 z:
     LT x
   | EQ x
+;
 x:
     r w
   | r

@@ -33,23 +33,46 @@ class Automata():
         print(self.states)
 
         for state in self.states:
+            counter = 0
             if state.is_initial==False and state.is_final==False:
                 custom_label = ''
                 custom_label = state.name + ' | '
                 for i in state.list:
-                    custom_label += i.left+':'+i.right+'\\n'
+                    if i.is_closure:
+                        #print('true')
+                        custom_label += i.left+':'+i.right+'\\n'
+                    else:
+                        if counter == 0:
+                            custom_label += '|'
+                            counter += 1
+                        #print('false')
+                        custom_label += i.left+':'+i.right+'\\n'
                 graph_dot.node(name= state.name,label = custom_label)
             elif state.is_final:
                 custom_label = ''
                 custom_label = state.name + ' | '
                 for i in state.list:
-                    custom_label += i.left+':'+i.right+'\\n'
+                    if i.is_closure:
+                        custom_label += i.left+':'+i.right+'\\n'
+                    else:
+                        if counter == 0:
+                            custom_label += '|'
+                            counter += 1
+                        #print('false')
+                        custom_label += i.left+':'+i.right+'\\n'
                 graph_dot.node(name= state.name,label = custom_label, color='blue')
             else:
                 custom_label = ''
                 custom_label = state.name + ' | '
                 for i in state.list:
-                    custom_label += i.left+':'+i.right+'\\n'
+                    if i.is_closure:
+                        custom_label += i.left+':'+i.right+'\\n'
+                    else:
+                        if counter == 0:
+                            custom_label += '|'
+                            counter += 1
+                        #print('false')
+                        custom_label += i.left+':'+i.right+'\\n'
                 graph_dot.node(name= state.name,label = custom_label)
 
         #print(  'transitions',self.transitions)
