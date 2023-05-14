@@ -1,6 +1,6 @@
 from graphviz import Digraph
 class Automata():
-    def __init__(self, states, alphabet, transitions, initial, finals):
+    def __init__(self, states=None, alphabet=None, transitions=None, initial=None, finals=None):
         self.states = states
         self.alphabet = alphabet
         self.transitions = transitions
@@ -25,3 +25,38 @@ class Automata():
                     graph_dot.edge(transition.__str__(),transition_final.__str__(),label=str(symbol))
 
         graph_dot.render(directory='test-output',view=True)
+
+    def visualization(self):
+        graph_dot = Digraph('automata1',format='pdf', node_attr={'shape': 'record'})
+        graph_dot.attr(rankdir='LR')
+        print(len(self.states) )
+        print(self.states)
+
+        for state in self.states:
+            if state.is_initial==False and state.is_final==False:
+                custom_label = ''
+                custom_label = state.name + ' | '
+                for i in state.list:
+                    custom_label += i.left+':'+i.right+'\\n'
+                graph_dot.node(name= state.name,label = custom_label)
+            elif state.is_final:
+                custom_label = ''
+                custom_label = state.name + ' | '
+                for i in state.list:
+                    custom_label += i.left+':'+i.right+'\\n'
+                graph_dot.node(name= state.name,label = custom_label, color='blue')
+            else:
+                custom_label = ''
+                custom_label = state.name + ' | '
+                for i in state.list:
+                    custom_label += i.left+':'+i.right+'\\n'
+                graph_dot.node(name= state.name,label = custom_label)
+
+        #print(  'transitions',self.transitions)
+        for transition in self.transitions:
+            for symbol in self.transitions[transition]:
+                #print('symbol',symbol,self.transitions[transition][symbol],transition)
+
+                graph_dot.edge(transition.__str__(),self.transitions[transition][symbol].__str__(),label=str(symbol))
+
+        graph_dot.render(directory='test-output1',view=True)

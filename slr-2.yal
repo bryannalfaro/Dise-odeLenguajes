@@ -4,24 +4,32 @@
 (* Introducir cualquier header aqui *)
 
 let delim = ["\s\t\n"]
-let ws = delim+
+let WS = delim+
 let letter = ['A'-'Z''a'-'z']
 let digit = ['0'-'9']
 let digits = digit+
-let id = letter(letter|digit)*
-let number = digits('.'digits)?('E'['+''-']?digits)?
+let ID = letter(letter|digit)*
+let NUMBER = digits('.'digits)?('E'['+''-']?digits)?
+let PLUS = '+'
+let MINUS = '-'
+let TIMES = '*'
+let LPAREN = '('
+let RPAREN = ')'
+let EQUAL = '='
+let DIV = '/'
+
 
 rule tokens =
-    ws        { print(WS) }               (* Cambie por una acción válida, que devuelva el token *)
-  | id        { print(ID) }
-  | number    { print(NUMBER) }
-  | '+'       { print(PLUS) }
-  | '-'       { print(MINUS) }
-  | '*'       { print(TIMES) }
-  | '/'       { print('DIV') }
-  | '('       { print(LPAREN) }
-  | ')'       { print(RPAREN) }
-  | '='
+    WS        { print(WS) }               (* Cambie por una acción válida, que devuelva el token *)
+  | ID        { print(ID) }
+  | NUMBER    { print(NUMBER) }
+  | PLUS       { print(PLUS) }
+  | MINUS       { print(MINUS) }
+  | TIMES       { print(TIMES) }
+  | DIV       { print('DIV') }
+  | LPAREN       { print(LPAREN) }
+  | RPAREN       { print(RPAREN) }
+  | EQUAL
 
 (* Introducir cualquier trailer aqui *)
 (* print('EOF')*)

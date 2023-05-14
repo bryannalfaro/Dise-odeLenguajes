@@ -5,6 +5,8 @@ from reader import Reader
 from reader_parser import Reader_Parser
 import pickle
 from generate_code import GeneratingScanner
+from automata.LR0 import AutomataLR
+from construct_lr0 import ConstructLR
 #initialize alphabet
 validate =False
 State.counter = 0
@@ -30,7 +32,12 @@ if flag == False:
 
 print("LOS TOKENS SI COINCIDEN")
 
+#make the automata
+automata = ConstructLR(reader_parser.productions_list)
+automata = automata.make_automata()
+automata.visualization()
 input()
+
 
 
 a = input("Enter to continue...") #solo para la siguiente

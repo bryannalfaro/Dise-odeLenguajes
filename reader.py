@@ -47,15 +47,15 @@ class Reader():
                     print(colored(error,'red'))
                 return False
             else:
-                print('MEGA STRING',self.file_string)
-                print('COMMENTS',self.comments)
+                # print('MEGA STRING',self.file_string)
+                # print('COMMENTS',self.comments)
                 print('TOKENS',self.rule_stack)
-                print('DEFINITION',self.definitions)
-                print('ACTIONS',self.actions)
+                # print('DEFINITION',self.definitions)
+                # print('ACTIONS',self.actions)
                 self.header = self.comments[0]
                 self.trailer = self.comments[-1]
-                print('HEADER',self.header)
-                print('TRAILER',self.trailer)
+                # print('HEADER',self.header)
+                # print('TRAILER',self.trailer)
                 return True
 
 
@@ -70,14 +70,14 @@ class Reader():
                     self.regex += '('+i+')' + '#'+'|'
                 else:
                     self.regex += '('+i+')'+'#'
-        print("FINAL REGEX: ",self.regex)
+        #print("FINAL REGEX: ",self.regex)
         return self.regex
 
     #Este metodo procesa cada linea y se verifica si es de tokens o no
     def process_file(self):
         #Recorrer string
         i = 0
-        print('LEN',len(self.file_string))
+        #print('LEN',len(self.file_string))
         while i < len(self.file_string):
             self.current_char = self.file_string[i]
             if self.processing_tokens:
@@ -691,7 +691,7 @@ class Reader():
                 self.pos += 1
                 #print('SELF CURRENT',self.current_char,self.get_next_char(self.actual_line,self.pos))
 
-            print('SALIR')
+            #print('SALIR')
             #self.current_string += self.current_char
             self.coincidir('*')
             #self.current_string += self.current_char
