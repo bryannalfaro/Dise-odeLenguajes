@@ -33,9 +33,11 @@ if flag == False:
 print("LOS TOKENS SI COINCIDEN")
 
 #make the automata
-automata = ConstructLR(reader_parser.productions_list)
-automata = automata.make_automata()
-automata.visualization()
+automata_lr = ConstructLR(reader_parser.productions_list,reader_parser.tokens)
+automata = automata_lr.make_automata()
+print('FIRST',automata_lr.first('f'))
+print('FOLLOW',automata_lr.follow('f'))
+#automata.visualization()
 input()
 
 '''

@@ -1,17 +1,21 @@
 from time import sleep
+from Symbol import Symbol
 from production import Production
 from state_definition import State
 from automata.LR0 import AutomataLR
+from operators import *
 class ConstructLR():
-    def __init__(self, productions):
+    def __init__(self, productions,tokens):
         super().__init__()
         self.yalex_productions = productions
         self.gramatical_elements = []
+        self.expand_productions_without_dot = []
         self.production_indicate = None
         self.productions = []
         self.make_productions()
         self.expanded_productions = []
         self.expand_production()
+        self.tokens = tokens
 
         self.J_results = []
 
@@ -63,6 +67,13 @@ class ConstructLR():
         for production in self.productions:
             self.expanded_productions.append(production)
 
+        #save an independent copy
+        for production in self.expanded_productions:
+            self.expand_productions_without_dot.append(Production(production.left,production.right))
+
+
+        for i in range(len(self.expanded_productions)):
+            print('expanded',self.expanded_productions[i].left,'-->',self.expanded_productions[i].right)
 
         #add dot to the expanded productions
         for i in range(len(self.expanded_productions)):
@@ -70,6 +81,9 @@ class ConstructLR():
 
         # for i in self.expanded_productions:
         #      print('expanded',i.left,'-->',i.right)
+
+        # for i in range(len(self.expand_productions_without_dot)):
+        #     print('expanded copy',self.expand_productions_without_dot[i].left,'-->',self.expand_productions_without_dot[i].right)
 
     #Construct the closure for LR0 automata
     def closure(self, state):
@@ -270,3 +284,73 @@ class ConstructLR():
         #make the automata
         automata = AutomataLR(C_group,self.gramatical_elements,transitions,initial_state,[state for state in C_group if state.is_final])
         return automata
+
+
+    def first(self,symbol):
+        #add the last epsilon
+        #print('FIRST',symbol)
+        first = []
+        flag = False
+        #check if the symbol is a terminal
+        if symbol in self.tokens and symbol not in first:
+            first.append(symbol)
+        else:
+            #print('NOT TERMINAL')
+            for production in self.expand_productions_without_dot:
+                if production.left == symbol:
+                    arr = self.divide_production(production.right)
+                    for j in range(len(arr)):
+
+                        if arr[j] == Epsilon().symbol:
+                            first.append(Epsilon().symbol)
+                            break
+                        elif arr[j] == symbol:
+                            break
+                        else:
+                            first_arr = self.first(arr[j])
+                            for i in first_arr:
+                                if i == Symbol('ε').name:
+                                    first_arr.remove(i)
+                                    flag = True
+                            if flag == False:
+                                first+=first_arr
+                                break
+                            else:
+                                first+=first_arr
+        return list(set(first))
+
+    def follow(self,symbol):
+        follow = []
+        #print(self.production_indicate.left)
+        if symbol == self.production_indicate.left: #if is the initial symbol
+            #print("ENTRE",symbol)
+            follow.append(Symbol('$').name)
+        for production in self.expand_productions_without_dot:
+            arr = self.divide_production(production.right)
+            for i in range(len(arr)):
+                if arr[i] == symbol:
+                    if i == len(arr)-1: #if is the last symbol
+                        if production.left != symbol:
+                            follow += self.follow(production.left)
+                    else: #make first of the next symbol
+                        first_arr = self.first(arr[i+1])
+                        for j in first_arr:
+                            if j == Symbol('ε').name: #if epsilon is in the first
+                                first_arr.remove(j)
+                                follow += self.follow(production.left)
+                        follow += first_arr
+        return list(set(follow))
+
+    def divide_production(self,production):
+        prod_array = []
+
+        temp = ''
+        for i in range(len(production)):
+            if production[i] == ' ':
+                prod_array.append(temp)
+                temp = ''
+            else:
+                temp += production[i]
+        prod_array.append(temp)
+
+        return prod_array

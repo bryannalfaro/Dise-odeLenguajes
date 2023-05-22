@@ -27,7 +27,7 @@ class Reader_Parser():
             self.yalex_values.append(i.token)
         print('YALEX VALUES',self.yalex_values)
     def read(self):
-        file = open(self.path, "r")
+        file = open(self.path, "r",encoding="utf8")
         for line in file:
             self.file_string += line
         self.process_file()
@@ -50,6 +50,7 @@ class Reader_Parser():
         i = 0
         while i < len(self.file_string):
             self.current_char = self.file_string[i]
+
             if self.processing_production:
                 #validate if the tokens are in yalex_tokens
 
