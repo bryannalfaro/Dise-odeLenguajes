@@ -37,7 +37,10 @@ automata_lr = ConstructLR(reader_parser.productions_list,reader_parser.tokens)
 automata = automata_lr.make_automata()
 print('FIRST',automata_lr.first('expression'))
 print('FOLLOW',automata_lr.follow('expression'))
-table = automata_lr.make_table(automata)
+actions, goto = automata_lr.make_table(automata)
+automata.action = actions
+automata.goto = goto
+automata.simulate()
 
 #automata.visualization()
 input()

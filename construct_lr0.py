@@ -292,6 +292,7 @@ class ConstructLR():
         #make the automata
         automata = AutomataLR(C_group,self.gramatical_elements,transitions,initial_state,[state for state in C_group if state.is_final])
         automata.tokens_list = self.tokens
+        automata.productions = self.expand_productions_without_dot
         return automata
 
 
@@ -477,7 +478,9 @@ class ConstructLR():
 
 
         custom_label += '</table>>'
-        graph.node(name='table',label = custom_label)
-        graph.render(directory='test-output',view=True)
 
+        graph.node(name='table',label = custom_label)
+        #graph.render(directory='test-output',view=True)
+
+        return self.actions_table,self.goto_table
 
