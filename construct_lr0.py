@@ -14,8 +14,11 @@ class ConstructLR():
         self.productions = []
         self.make_productions()
         self.expanded_productions = []
+        self.expanded_productions_original = []
         self.expand_production()
         self.tokens = tokens
+        self.actions_table = {}
+        self.goto_table = {}
 
         self.J_results = []
 
@@ -229,6 +232,8 @@ class ConstructLR():
         initial_state.list = self.closure([initial_prod])
         C_group = []
         transitions = {}
+        #initialize empty transitions
+
         C_group.append(initial_state)
         change = True
         while change:
@@ -283,6 +288,7 @@ class ConstructLR():
 
         #make the automata
         automata = AutomataLR(C_group,self.gramatical_elements,transitions,initial_state,[state for state in C_group if state.is_final])
+        automata.tokens_list = self.tokens
         return automata
 
 
@@ -354,3 +360,78 @@ class ConstructLR():
         prod_array.append(temp)
 
         return prod_array
+
+    def make_table(self,automata):
+        print(automata.states)
+        print(automata.alphabet)
+        print(automata.tokens_list)
+        print(automata.identified_tokens)
+        print(automata.transitions)
+        print("TABLE")
+        for state in automata.states:
+            self.actions_table[state] = {}
+            self.goto_table[state] = {}
+
+        print(self.goto_table)
+
+
+        #fill goto
+        for state in automata.states:
+            for symbol in automata.alphabet:
+                if symbol not in automata.tokens_list:
+                    #print('STATE',state,symbol,automata.transitions[state])
+                    try:
+                        if symbol in automata.transitions[state]:
+                            #print('yes',automata.transitions[state][symbol])
+                            self.goto_table[state][symbol] = automata.transitions[state][symbol]
+                        else:
+                            self.goto_table[state][symbol] = None
+                    except:
+                        self.goto_table[state][symbol] = None
+
+        print('GOTO TABLE')
+        print(self.goto_table)
+
+        #fill actions
+        #append the terminal
+        automata.tokens_list.append(Symbol('$').name)
+        for state in automata.states:
+            for symbol in automata.tokens_list:
+                if symbol != Epsilon().symbol:
+                    try:
+                        if symbol in automata.transitions[state]:
+                            self.actions_table[state][symbol] = 's'+automata.transitions[state][symbol].name
+                        #verify if the state is final
+                        elif state.is_final and symbol == Symbol('$').name:
+                            self.actions_table[state][symbol] = 'accept'
+
+                        else:
+                            self.actions_table[state][symbol] = None
+                    except:
+                        self.actions_table[state][symbol] = None
+                else:
+                    self.actions_table[state][symbol] = None
+
+        # fill the reductions
+        for state in automata.states:
+            if state.is_final == False:
+                for production in state.list:
+                    #print(state,production.left,production.right)
+                    #print('PRODUCTION',production.left,production.right)
+                    if production.right.strip()[-1] == '.':
+                        #print('PRODUCTION',production.left,'-->',production.right)
+                        for symbol in automata.tokens_list:
+                            if symbol in self.follow(production.left):
+                                for prod in range(len(self.expand_productions_without_dot)):
+                                    #print('PROVING',self.expand_productions_without_dot[prod].left==production.left,self.expand_productions_without_dot[prod].right,production.right.strip()[:-1], self.expand_productions_without_dot[prod].right==production.right.strip()[:-2], len(self.expand_productions_without_dot[prod].right),len(production.right.strip()[:-2]))
+                                    if self.expand_productions_without_dot[prod].left == production.left and self.expand_productions_without_dot[prod].right.strip() == production.right.strip()[:-2]:
+                                        #print('SAME')
+                                        self.actions_table[state][symbol] = 'r'+str(prod)
+                                        break
+
+        print('ACTIONS TABLE')
+        print(self.actions_table)
+
+        #graph the table with graphviz
+
+
