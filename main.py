@@ -38,6 +38,7 @@ automata = automata_lr.make_automata()
 print('FIRST',automata_lr.first('expression'))
 print('FOLLOW',automata_lr.follow('expression'))
 table = automata_lr.make_table(automata)
+
 #automata.visualization()
 input()
 

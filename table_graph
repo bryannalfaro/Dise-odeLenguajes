@@ -1,0 +1,39 @@
+digraph {
+	table [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+	<tr>
+		<td>
+			Header 1	
+		</td>
+		<td>
+			Header 2	
+		</td>
+		<td>
+			Header 3	
+		</td>
+	</tr>
+
+	<tr>
+		<td>
+			Data 1	
+		</td>
+		<td>
+			Data 2	
+		</td>
+		<td>
+			Data 3	
+		</td>
+	</tr>
+
+	<tr>
+		<td>
+			Data 4	
+		</td>
+		<td>
+			Data 5	
+		</td>
+		<td>
+			Data 6	
+		</td>
+	</tr>
+</table>> shape=none]
+}

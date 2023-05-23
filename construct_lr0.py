@@ -4,10 +4,12 @@ from production import Production
 from state_definition import State
 from automata.LR0 import AutomataLR
 from operators import *
+from graphviz import Digraph
 class ConstructLR():
     def __init__(self, productions,tokens):
         super().__init__()
         self.yalex_productions = productions
+        self.C_aut = None
         self.gramatical_elements = []
         self.expand_productions_without_dot = []
         self.production_indicate = None
@@ -19,6 +21,7 @@ class ConstructLR():
         self.tokens = tokens
         self.actions_table = {}
         self.goto_table = {}
+
 
         self.J_results = []
 
@@ -285,7 +288,7 @@ class ConstructLR():
                     if production.right.strip() == self.production_indicate.right+' .':
                         state.is_final = True
                         print('FINAL STATE',state.name)
-
+        self.C_aut = C_group
         #make the automata
         automata = AutomataLR(C_group,self.gramatical_elements,transitions,initial_state,[state for state in C_group if state.is_final])
         automata.tokens_list = self.tokens
@@ -367,6 +370,8 @@ class ConstructLR():
         print(automata.tokens_list)
         print(automata.identified_tokens)
         print(automata.transitions)
+        print(automata.initial)
+        print(automata.finals)
         print("TABLE")
         for state in automata.states:
             self.actions_table[state] = {}
@@ -397,13 +402,15 @@ class ConstructLR():
         automata.tokens_list.append(Symbol('$').name)
         for state in automata.states:
             for symbol in automata.tokens_list:
-                if symbol != Epsilon().symbol:
+                #verify if the state is final
+                if state.is_final and symbol == Symbol('$').name:
+                    print("state FINAL")
+                    self.actions_table[state][symbol] = 'accept'
+                elif symbol != Epsilon().symbol:
                     try:
                         if symbol in automata.transitions[state]:
                             self.actions_table[state][symbol] = 's'+automata.transitions[state][symbol].name
-                        #verify if the state is final
-                        elif state.is_final and symbol == Symbol('$').name:
-                            self.actions_table[state][symbol] = 'accept'
+
 
                         else:
                             self.actions_table[state][symbol] = None
@@ -432,6 +439,45 @@ class ConstructLR():
         print('ACTIONS TABLE')
         print(self.actions_table)
 
-        #graph the table with graphviz
+        #visualize table html format with graphviz
+        # Define the table as a list of lists
+        graph = Digraph(format='pdf', node_attr={'shape': 'record'})
+        graph.attr(rankdir='LR')
+
+        custom_label = ''
+        custom_label += '<<table border="0" cellborder="1" cellspacing="0">'
+        #put the states as columns
+        custom_label += '<tr><td rowspan="2">STATES</td>'
+        custom_label += '<td colspan="'+str(len(automata.tokens_list))+'">ACTIONS</td>'
+        custom_label += '<td colspan="'+str(len(list(set(automata.alphabet) - set(automata.tokens_list))))+'">GOTO</td>'
+        custom_label += '</tr>'
+
+        custom_label += '<tr>'
+        for i in automata.tokens_list:
+            custom_label += '<td>'+i+'</td>'
+        for i in list(set(automata.alphabet) - set(automata.tokens_list)):
+            custom_label += '<td>'+i+'</td>'
+        custom_label += '</tr>'
+
+        for state in automata.states:
+            custom_label += '<tr>'
+            custom_label += '<td>'+state.name+'</td>'
+            for symbol in automata.tokens_list:
+                if self.actions_table[state][symbol] != None:
+                    custom_label += '<td>'+self.actions_table[state][symbol]+'</td>'
+                else:
+                    custom_label += '<td></td>'
+            for symbol in list(set(automata.alphabet) - set(automata.tokens_list)):
+                if self.goto_table[state][symbol] != None:
+                    custom_label += '<td>'+self.goto_table[state][symbol].name+'</td>'
+                else:
+                    custom_label += '<td></td>'
+            custom_label += '</tr>'
+
+
+
+        custom_label += '</table>>'
+        graph.node(name='table',label = custom_label)
+        graph.render(directory='test-output',view=True)
 
 
