@@ -35,6 +35,10 @@ class Reader_Parser():
         if len(self.errors) > 0:
             print('ERRORS: ',self.errors)
             return False
+        elif len(self.yalex_values) != len(self.tokens):
+            print('YAELX TOKENS: ',self.yalex_values)
+            print('TOKENS: ',self.tokens)
+            return False
         else:
             #print(self.file_string)
             print('COMMENTS: ',self.comments)

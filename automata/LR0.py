@@ -9,6 +9,7 @@ class AutomataLR(Automata):
         self.states = states
         self.alphabet = alphabet
         self.transitions = transitions
+        self.ignored_tokens = []
         self.initial = initial
         self.finals = finals
         self.tokens_list = tokens_list
@@ -18,10 +19,11 @@ class AutomataLR(Automata):
         self.stack = []
         self.productions = {}
 
-    def simulate(self):
-        words = ['ID', 'ID', 'ID', 'PLUS', 'ID', '$']
+    def simulate(self,tokens):
+        words = tokens
         print('\n')
         print('WORDS\n',words)
+        words.append('$')
         #reverse the list
         words.reverse()
         #print(self.action)
@@ -34,7 +36,9 @@ class AutomataLR(Automata):
             #check the action
             #print('STACK',self.stack)
             #print('WORD',a)
-
+            if a in self.ignored_tokens:
+                a = words.pop()
+                continue
             print('ACTION',self.action[self.stack[-1]][a])
             if (self.action[self.stack[-1]][a]) !=None:
                 if (self.action[self.stack[-1]][a])[0] == 's':
@@ -65,5 +69,6 @@ class AutomataLR(Automata):
                     print('ACCEPTED')
                     break
             else:
-                print('ERROR SINTACTICO')
+                print(f'ERROR SINTACTICO there is no intersection between {self.stack[-1]} and {a}')
+                exit()
                 break

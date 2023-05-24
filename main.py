@@ -33,16 +33,23 @@ if flag == False:
 print("LOS TOKENS SI COINCIDEN")
 
 #make the automata
-automata_lr = ConstructLR(reader_parser.productions_list,reader_parser.tokens)
+automata_lr = ConstructLR(reader_parser.productions_list,reader_parser.tokens,reader_parser.ignored_tokens)
+with open('lr0', 'wb') as handle:
+    pickle.dump(automata_lr, handle, protocol=pickle.HIGHEST_PROTOCOL)
 automata = automata_lr.make_automata()
-print('FIRST',automata_lr.first('expression'))
-print('FOLLOW',automata_lr.follow('expression'))
-actions, goto = automata_lr.make_table(automata)
-automata.action = actions
-automata.goto = goto
-automata.simulate()
+# print('FIRST',automata_lr.first('factor'))
+# print('FOLLOW',automata_lr.follow('factor'))
+# #automata.visualization()
+# input()
+# actions, goto = automata_lr.make_table(automata)
 
-#automata.visualization()
+# automata.action = actions
+# automata.goto = goto
+
+# input()
+# automata.simulate()
+
+
 input()
 
 '''
@@ -94,6 +101,7 @@ header = reader.header
 trailer = reader.trailer
 scanner = GeneratingScanner(header,trailer)
 scanner.build_scanner()
+scanner.build_parser()
 print('----------------------------------------')
 
 

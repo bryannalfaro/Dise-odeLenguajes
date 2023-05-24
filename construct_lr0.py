@@ -6,9 +6,10 @@ from automata.LR0 import AutomataLR
 from operators import *
 from graphviz import Digraph
 class ConstructLR():
-    def __init__(self, productions,tokens):
+    def __init__(self, productions,tokens,ignored_tokens):
         super().__init__()
         self.yalex_productions = productions
+        self.ignored_tokens = ignored_tokens
         self.C_aut = None
         self.gramatical_elements = []
         self.expand_productions_without_dot = []
@@ -16,6 +17,7 @@ class ConstructLR():
         self.productions = []
         self.make_productions()
         self.expanded_productions = []
+        self.already_evaluated = []
         self.expanded_productions_original = []
         self.expand_production()
         self.tokens = tokens
@@ -279,7 +281,7 @@ class ConstructLR():
                         else:
                             pass
 
-        print(len(C_group))
+        #print(len(C_group))
         #make the final states those who has the expanded production
         for state in C_group:
             for production in state.list:
@@ -293,6 +295,7 @@ class ConstructLR():
         automata = AutomataLR(C_group,self.gramatical_elements,transitions,initial_state,[state for state in C_group if state.is_final])
         automata.tokens_list = self.tokens
         automata.productions = self.expand_productions_without_dot
+        automata.ignored_tokens = self.ignored_tokens
         return automata
 
 
@@ -331,24 +334,45 @@ class ConstructLR():
 
     def follow(self,symbol):
         follow = []
+        #print(symbol, self.already_evaluated)
+
         #print(self.production_indicate.left)
         if symbol == self.production_indicate.left: #if is the initial symbol
             #print("ENTRE",symbol)
             follow.append(Symbol('$').name)
+            self.already_evaluated.append(self.production_indicate.left)
         for production in self.expand_productions_without_dot:
             arr = self.divide_production(production.right)
             for i in range(len(arr)):
+                #print('ARR',arr[i])
                 if arr[i] == symbol:
+                    self.already_evaluated.append(symbol)
                     if i == len(arr)-1: #if is the last symbol
                         if production.left != symbol:
-                            follow += self.follow(production.left)
+                            #print('PROD LEFT FOLLOW',production.left)
+                            if production.left not in self.already_evaluated:
+                                follow += self.follow(production.left)
+                                self.already_evaluated.append(production.left)
+                            else:
+                                break
+
+                            #print('FOLLOW',follow)
                     else: #make first of the next symbol
+                        #print('HERE')
                         first_arr = self.first(arr[i+1])
+                        #print('FIRST',first_arr)
                         for j in first_arr:
                             if j == Symbol('ε').name: #if epsilon is in the first
                                 first_arr.remove(j)
-                                follow += self.follow(production.left)
+                                if production.left not in self.already_evaluated:
+                                    follow += self.follow(production.left)
+                                    self.already_evaluated.append(production.left)
+                                else:
+                                    break
                         follow += first_arr
+                        #print('FOLLOW 2',follow)
+
+        self.already_evaluated = []
         return list(set(follow))
 
     def divide_production(self,production):
@@ -366,19 +390,19 @@ class ConstructLR():
         return prod_array
 
     def make_table(self,automata):
-        print(automata.states)
-        print(automata.alphabet)
-        print(automata.tokens_list)
-        print(automata.identified_tokens)
-        print(automata.transitions)
-        print(automata.initial)
-        print(automata.finals)
+        # print(automata.states)
+        # print(automata.alphabet)
+        # print(automata.tokens_list)
+        # print(automata.identified_tokens)
+        # print(automata.transitions)
+        # print(automata.initial)
+        # print(automata.finals)
         print("TABLE")
         for state in automata.states:
             self.actions_table[state] = {}
             self.goto_table[state] = {}
 
-        print(self.goto_table)
+        #print(self.goto_table)
 
 
         #fill goto
@@ -395,8 +419,8 @@ class ConstructLR():
                     except:
                         self.goto_table[state][symbol] = None
 
-        print('GOTO TABLE')
-        print(self.goto_table)
+        #print('GOTO TABLE')
+        #print(self.goto_table)
 
         #fill actions
         #append the terminal
@@ -405,12 +429,14 @@ class ConstructLR():
             for symbol in automata.tokens_list:
                 #verify if the state is final
                 if state.is_final and symbol == Symbol('$').name:
-                    print("state FINAL")
+                    #print("state FINAL")
                     self.actions_table[state][symbol] = 'accept'
                 elif symbol != Epsilon().symbol:
                     try:
                         if symbol in automata.transitions[state]:
-                            self.actions_table[state][symbol] = 's'+automata.transitions[state][symbol].name
+                            #verify if is a shift/reduce conflict
+
+                                self.actions_table[state][symbol] = 's'+automata.transitions[state][symbol].name
 
 
                         else:
@@ -420,6 +446,9 @@ class ConstructLR():
                 else:
                     self.actions_table[state][symbol] = None
 
+        #print('ACTIONS TABLE BEFORE')
+        #print(self.actions_table)
+        #print(self.already_evaluated)
         # fill the reductions
         for state in automata.states:
             if state.is_final == False:
@@ -429,16 +458,25 @@ class ConstructLR():
                     if production.right.strip()[-1] == '.':
                         #print('PRODUCTION',production.left,'-->',production.right)
                         for symbol in automata.tokens_list:
+                            #print('FOLLO PRODUCTION',production.left,state)
+
+                            #print('FOLLOW',state,self.follow(production.left))
                             if symbol in self.follow(production.left):
                                 for prod in range(len(self.expand_productions_without_dot)):
                                     #print('PROVING',self.expand_productions_without_dot[prod].left==production.left,self.expand_productions_without_dot[prod].right,production.right.strip()[:-1], self.expand_productions_without_dot[prod].right==production.right.strip()[:-2], len(self.expand_productions_without_dot[prod].right),len(production.right.strip()[:-2]))
                                     if self.expand_productions_without_dot[prod].left == production.left and self.expand_productions_without_dot[prod].right.strip() == production.right.strip()[:-2]:
                                         #print('SAME')
-                                        self.actions_table[state][symbol] = 'r'+str(prod)
-                                        break
+                                        #detect shift/reduce conflict
+                                        if self.actions_table[state][symbol] != None:
+                                            print(f'SHIFT/REDUCE CONFLICT: You want to reduce but there is {self.actions_table[state][symbol]} in state {state.name} with symbol {symbol}')
+                                            exit()
 
-        print('ACTIONS TABLE')
-        print(self.actions_table)
+                                        else:
+                                            self.actions_table[state][symbol] = 'r'+str(prod)
+                                            break
+
+        # print('ACTIONS TABLE')
+        # print(self.actions_table)
 
         #visualize table html format with graphviz
         # Define the table as a list of lists

@@ -1,0 +1,19 @@
+%token ID
+%token PLUS
+%token TIMES
+%token LPAREN RPAREN
+%token EQUAL
+
+%%
+
+expression:
+    term EQUAL factor
+  | factor
+;
+term:
+    TIMES factor
+  | ID
+;
+factor:
+    term
+;

@@ -12,6 +12,11 @@
 %token NUMBER
 %token LPAREN RPAREN
 
+%token WS EQUAL
+
+IGNORE WS
+IGNORE EQUAL
+
 %%
 
 expression:

@@ -1,25 +1,31 @@
 from definitions import *
 import pickle
-#read the dfa
-with open('dfa', 'rb') as handle:
-    dfa = pickle.load(handle)
-#read the file to simulate from console
-input_file = input('Enter the file to simulate: ')
-with open(input_file, 'r') as f:
-    # Read the contents of the file
-    text = f.read()
+class ScannerSLR():
+    def __init__(self):
+      self.get_identified = None
 
-#simulate the dfa
-dfa.simulate_dfa(text)
-tokens  = dfa.get_identified()
-yal_tokens = dfa.get_list_tokens()
+    def load_dfa(self):
+        #read the dfa
+        with open('dfa', 'rb') as handle:
+            dfa = pickle.load(handle)
+        #read the file to simulate from console
+        input_file = input('Enter the file to simulate: ')
+        with open(input_file, 'r') as f:
+            # Read the contents of the file
+            text = f.read()
 
-for i in tokens:
-    if type(i) == str:
-        print(i)
-    else:
-        if i.definition != None:
-            exec(i.definition.strip())
-        else:
-            print('NO DEFINITION',i.token)
+        #simulate the dfa
+        dfa.simulate_dfa(text)
+        tokens  = dfa.get_identified()
+        self.get_identified = dfa.get_identified()
+        yal_tokens = dfa.get_list_tokens()
+
+        for i in tokens:
+            if type(i) == str:
+                print(i)
+            else:
+                if i.definition != None:
+                    exec(i.definition.strip())
+                else:
+                    print('NO DEFINITION',i.token)
 print('EOF')
