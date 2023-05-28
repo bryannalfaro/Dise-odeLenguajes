@@ -1,0 +1,23 @@
+(* Lexer para Gramática No. 3 - Variación expresiones aritméticas simples *)
+
+(* Introducir cualquier header aqui *)
+
+let delim = [' ''\t''\n']
+let WHITESPACE = delim+
+let digit = ["0123456789"]
+let digits = digit+
+let NUMBER = digits('.'digits)?('E'['+''-']?digits)?
+let PLUS = '+'
+let TIMES = '*'
+let LPAREN = '('
+let RPAREN = ')'
+
+rule tokens =
+    WHITESPACE        { return WHITESPACE }               (* Cambie por una acción válida, que devuelva el token *)
+  | NUMBER    { return NUMBER }
+  | PLUS       { return PLUS }
+  | TIMES       { return TIMES }
+  | LPAREN       { return LPAREN }
+  | RPAREN       { return RPAREN }
+
+(* Introducir cualquier trailer aqui *)

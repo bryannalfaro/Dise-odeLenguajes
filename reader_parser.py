@@ -53,7 +53,9 @@ class Reader_Parser():
         #Recorrer string
         i = 0
         while i < len(self.file_string):
+
             self.current_char = self.file_string[i]
+            #print('CHAR: ',self.current_char)
 
             if self.processing_production:
                 #validate if the tokens are in yalex_tokens

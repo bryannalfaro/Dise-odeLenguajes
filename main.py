@@ -97,9 +97,9 @@ with open('dfa', 'wb') as handle:
     pickle.dump(dfa_direct, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 #create the scanner
-header = reader.header
-trailer = reader.trailer
-scanner = GeneratingScanner(header,trailer)
+#header = reader.header
+#trailer = reader.trailer
+scanner = GeneratingScanner()
 scanner.build_scanner()
 scanner.build_parser()
 print('----------------------------------------')

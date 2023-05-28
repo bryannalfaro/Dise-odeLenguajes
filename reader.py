@@ -52,8 +52,9 @@ class Reader():
                 print('TOKENS',self.rule_stack)
                 # print('DEFINITION',self.definitions)
                 # print('ACTIONS',self.actions)
-                self.header = self.comments[0]
-                self.trailer = self.comments[-1]
+                if self.comments != []:
+                    self.header = self.comments[0]
+                    self.trailer = self.comments[-1]
                 # print('HEADER',self.header)
                 # print('TRAILER',self.trailer)
                 return True

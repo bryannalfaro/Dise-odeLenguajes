@@ -3,6 +3,7 @@
 %token TIMES
 %token LPAREN RPAREN
 %token EQUAL
+%token WS
 
 %%
 

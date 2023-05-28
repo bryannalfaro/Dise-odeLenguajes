@@ -1,4 +1,4 @@
-from definitions import *
+
 import pickle
 class ParserSLR():
     def __init__(self,tokens):

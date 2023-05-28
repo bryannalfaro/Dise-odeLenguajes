@@ -1,0 +1,13 @@
+let delim = [' ''\t''\n']
+let WHITESPACE = delim+
+let letter = ['A'-'Z''a'-'z']
+let digit = ['0'-'9']
+let ID = letter(letter|digit)*
+let EQUALS = '='
+let TIMES = '*'
+
+rule tokens =
+    WHITESPACE        { return WHITESPACE }
+  | ID        { return ID }
+  | EQUALS       { return EQUALS }
+  | TIMES       { return TIMES }

@@ -1,0 +1,32 @@
+(* from definitions import * *)
+(* Lexer para Gramática No. 2 - Expresiones aritméticas extendidas *)
+
+(* Introducir cualquier header aqui *)
+
+let delim = ["\s\t\n"]
+let WS = delim+
+let letter = ['A'-'Z''a'-'z']
+let digit = ['0'-'9']
+let digits = digit+
+let ID = letter(letter|digit)*
+let NUMBER = digits('.'digits)?('E'['+''-']?digits)?
+let PLUS = '+'
+let MINUS = '-'
+let TIMES = '*'
+let LPAREN = '('
+let RPAREN = ')'
+let EQUAL = '='
+let DIV = '/'
+
+
+rule tokens =
+    WS        { print(WS) }               (* Cambie por una acción válida, que devuelva el token *)
+  | ID        { print(ID) }
+  | PLUS       { print(PLUS) }
+  | TIMES       { print(TIMES) }
+  | LPAREN       { print(LPAREN) }
+  | RPAREN       { print(RPAREN) }
+  | EQUAL
+
+(* Introducir cualquier trailer aqui *)
+(* print('EOF')*)

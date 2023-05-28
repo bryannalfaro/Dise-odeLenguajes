@@ -37,7 +37,8 @@ class ScannerSLR():
                 print(i)
             else:
                 if i.definition != None:
-                    exec(i.definition.strip())
+                    print(i.token)
+                    #exec(i.definition.strip()) #yalex has return as definitions
                 else:
                     print('NO DEFINITION',i.token)
 ''')
